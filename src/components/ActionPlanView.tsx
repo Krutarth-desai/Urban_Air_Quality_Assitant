@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   Sparkles,
   Clock,
@@ -15,6 +16,9 @@ import {
   Shield,
   CheckSquare,
   Square,
+  Bookmark,
+  LogIn,
+  Loader2,
 } from "lucide-react";
 import type { ActionItem, GeneratedActionPlan } from "@/lib/schemas";
 
@@ -62,6 +66,40 @@ export function ActionPlanView({
     return initial;
   });
   const [copied, setCopied] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [savedSuccess, setSavedSuccess] = useState(false);
+  const [authPrompt, setAuthPrompt] = useState(false);
+
+  const handleSavePlan = async () => {
+    setSaving(true);
+    setAuthPrompt(false);
+    try {
+      const res = await fetch("/api/plans", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          city: cityName,
+          aqi_value: usAqi,
+          plan_json: plan,
+          completed_actions: Array.from(committedIds),
+        }),
+      });
+
+      if (res.status === 401) {
+        setAuthPrompt(true);
+        return;
+      }
+
+      if (res.ok) {
+        setSavedSuccess(true);
+        setTimeout(() => setSavedSuccess(false), 4000);
+      }
+    } catch (err) {
+      console.error("Failed to save plan:", err);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   // All 9 items across the 3 categories
   const allItems: ActionItem[] = [
@@ -146,11 +184,48 @@ Generated with SmogShield (Urban Air Quality Assistant)`;
             </p>
           </div>
 
-          <div className="inline-flex items-center gap-1.5 self-start rounded-full border border-teal-500/30 bg-teal-500/10 px-3 py-1 text-xs font-semibold text-teal-300">
-            <Sparkles className="h-3.5 w-3.5 text-teal-400" />
-            <span>
-              {source === "gemini" ? "AI Model: Gemini 2.5 Flash" : "Deterministic Fallback Plan"}
-            </span>
+          <div className="flex flex-wrap items-center gap-2.5 self-start">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-teal-500/30 bg-teal-500/10 px-3 py-1 text-xs font-semibold text-teal-300">
+              <Sparkles className="h-3.5 w-3.5 text-teal-400" />
+              <span>
+                {source === "gemini" ? "AI Model: Gemini 2.5 Flash" : "Deterministic Fallback Plan"}
+              </span>
+            </div>
+
+            {/* Save Plan to Account Button */}
+            {savedSuccess ? (
+              <div className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/20 px-3.5 py-1 text-xs font-bold text-emerald-300 shadow-sm">
+                <Check className="h-3.5 w-3.5 text-emerald-400" />
+                <span>Saved to Account!</span>
+              </div>
+            ) : authPrompt ? (
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/20 px-3.5 py-1 text-xs font-bold text-amber-200 shadow-sm transition hover:bg-amber-500/30"
+              >
+                <LogIn className="h-3.5 w-3.5 text-amber-300" />
+                <span>Sign in to save plans →</span>
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={handleSavePlan}
+                disabled={saving}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-teal-500/40 bg-teal-500/15 px-3.5 py-1 text-xs font-bold text-teal-200 shadow-sm transition hover:bg-teal-500/25 active:scale-95 disabled:opacity-60"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <>
+                    <Bookmark className="h-3.5 w-3.5 text-teal-400" />
+                    <span>Save Plan to Account</span>
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </div>
 

@@ -81,3 +81,39 @@ export interface GeneratedActionPlan {
   sustainableAlternatives: ActionItem[];
   communityTip: string;
 }
+
+export const SupabaseProfileSchema = z.object({
+  city: z.string().trim().min(2).max(100),
+  has_kids: z.boolean(),
+  has_seniors: z.boolean(),
+  has_respiratory_condition: z.boolean(),
+  has_hepa_purifier: z.boolean(),
+  commute_mode: z.enum([
+    "private_car",
+    "two_wheeler",
+    "public_transit",
+    "walk_cycle",
+    "work_from_home",
+  ]),
+});
+
+export type SupabaseProfile = z.infer<typeof SupabaseProfileSchema>;
+
+export const SavePlanRequestSchema = z.object({
+  city: z.string().trim().min(2).max(100),
+  aqi_value: z.number().min(0).max(1000),
+  plan_json: z.record(z.string(), z.unknown()),
+  completed_actions: z.array(z.string()).default([]),
+});
+
+export type SavePlanRequest = z.infer<typeof SavePlanRequestSchema>;
+
+export interface SavedPlanRow {
+  id: string;
+  user_id: string;
+  city: string;
+  aqi_value: number;
+  plan_json: GeneratedActionPlan;
+  completed_actions: string[];
+  created_at: string;
+}

@@ -159,6 +159,46 @@ export function ProfileForm({
     } catch (e) {
       console.warn("Could not read stored profile:", e);
     }
+
+    // Check if user has a cloud-synced profile in Supabase
+    fetch("/api/profile")
+      .then(async (res) => {
+        if (res.ok) {
+          const data = (await res.json()) as {
+            profile?: {
+              city: string;
+              has_kids: boolean;
+              has_seniors: boolean;
+              has_respiratory_condition: boolean;
+              has_hepa_purifier: boolean;
+              commute_mode: HouseholdProfile["commuteMode"];
+            };
+          };
+          if (data.profile) {
+            const members: HouseholdProfile["householdMembers"] = [];
+            if (data.profile.has_kids) members.push("infants_kids");
+            if (data.profile.has_seniors) members.push("elderly");
+            if (data.profile.has_respiratory_condition)
+              members.push("asthma_respiratory");
+            if (members.length === 0) members.push("general_adults");
+
+            const updated: HouseholdProfile = {
+              ...profile,
+              city: data.profile.city || profile.city,
+              hasAirPurifier: Boolean(data.profile.has_hepa_purifier),
+              commuteMode: data.profile.commute_mode || profile.commuteMode,
+              householdMembers: members,
+            };
+            onChange(updated);
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            } catch {}
+          }
+        }
+      })
+      .catch(() => {
+        // Guest mode fallback
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -191,6 +231,27 @@ export function ProfileForm({
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     } catch {}
+  };
+
+  const handleGenerateClick = () => {
+    // If authenticated, asynchronously persist profile updates to Supabase
+    fetch("/api/profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        city: profile.city,
+        has_kids: profile.householdMembers.includes("infants_kids"),
+        has_seniors: profile.householdMembers.includes("elderly"),
+        has_respiratory_condition:
+          profile.householdMembers.includes("asthma_respiratory"),
+        has_hepa_purifier: profile.hasAirPurifier,
+        commute_mode: profile.commuteMode,
+      }),
+    }).catch(() => {
+      // Guest mode - silently ignore
+    });
+
+    onSubmit();
   };
 
   return (
@@ -390,7 +451,7 @@ export function ProfileForm({
         <div className="pt-2">
           <button
             type="button"
-            onClick={onSubmit}
+            onClick={handleGenerateClick}
             disabled={loading}
             className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-teal-500 via-emerald-500 to-teal-600 px-6 py-3.5 text-sm font-bold text-slate-950 shadow-lg shadow-teal-500/25 transition duration-200 hover:from-teal-400 hover:via-emerald-400 hover:to-teal-500 hover:shadow-teal-500/40 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
           >

@@ -1,0 +1,115 @@
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { SupabaseProfileSchema } from "@/lib/schemas";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+
+export async function GET(request: Request) {
+  const ip = getClientIp(request);
+  const rate = checkRateLimit(`profile-get:${ip}`, 30, 60_000);
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a moment." },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfterSec) } }
+    );
+  }
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { data, error } = await supabase
+      .from("household_profiles")
+      .select("*")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error("[/api/profile GET] Database error:", error);
+      return NextResponse.json(
+        { error: "Failed to fetch household profile." },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ profile: data });
+  } catch (err: unknown) {
+    console.error("[/api/profile GET] Internal error:", err);
+    return NextResponse.json(
+      { error: "Failed to retrieve profile." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  const ip = getClientIp(request);
+  const rate = checkRateLimit(`profile-post:${ip}`, 20, 60_000);
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: "Too many profile updates. Please pause briefly." },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfterSec) } }
+    );
+  }
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const parsed = SupabaseProfileSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid profile data", details: parsed.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    const { data, error } = await supabase
+      .from("household_profiles")
+      .upsert(
+        {
+          user_id: user.id,
+          city: parsed.data.city,
+          has_kids: parsed.data.has_kids,
+          has_seniors: parsed.data.has_seniors,
+          has_respiratory_condition: parsed.data.has_respiratory_condition,
+          has_hepa_purifier: parsed.data.has_hepa_purifier,
+          commute_mode: parsed.data.commute_mode,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" }
+      )
+      .select()
+      .single();
+
+    if (error) {
+      console.error("[/api/profile POST] Database error:", error);
+      return NextResponse.json(
+        { error: "Failed to save household profile." },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ profile: data });
+  } catch (err: unknown) {
+    console.error("[/api/profile POST] Internal error:", err);
+    return NextResponse.json(
+      { error: "Failed to update profile." },
+      { status: 500 }
+    );
+  }
+}
