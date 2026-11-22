@@ -26,15 +26,27 @@ export async function login(
     };
   }
 
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-  if (error) {
+    if (error) {
+      return {
+        error: error.message,
+        success: null,
+      };
+    }
+  } catch (err: unknown) {
+    const msg =
+      err instanceof Error ? err.message : "Authentication service unavailable";
     return {
-      error: error.message,
+      error:
+        msg.includes("fetch failed") || msg.includes("placeholder")
+          ? "Supabase is not configured yet. Add your SUPABASE credentials to .env.local or click 'Continue as Guest'."
+          : msg,
       success: null,
     };
   }
@@ -67,15 +79,27 @@ export async function signup(
     };
   }
 
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-  });
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
 
-  if (error) {
+    if (error) {
+      return {
+        error: error.message,
+        success: null,
+      };
+    }
+  } catch (err: unknown) {
+    const msg =
+      err instanceof Error ? err.message : "Authentication service unavailable";
     return {
-      error: error.message,
+      error:
+        msg.includes("fetch failed") || msg.includes("placeholder")
+          ? "Supabase is not configured yet. Add your SUPABASE credentials to .env.local or click 'Continue as Guest'."
+          : msg,
       success: null,
     };
   }

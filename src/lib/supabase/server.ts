@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 /**
  * Creates a server-side Supabase client for Server Components,
  * Server Actions, and Route Handlers with secure cookie handling.
+ * Supports both publishable_key and anon_key variable conventions.
  */
 export async function createClient() {
   const cookieStore = await cookies();
@@ -14,7 +15,9 @@ export async function createClient() {
     "https://placeholder-project.supabase.co";
 
   const supabaseAnonKey =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.SUPABASE_PUBLISHABLE_KEY ||
     process.env.SUPABASE_ANON_KEY ||
     "placeholder-anon-key";
 
