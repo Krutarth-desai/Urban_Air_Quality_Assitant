@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import { ChatRequestSchema } from "@/lib/schemas";
 import { generateSmogChatReply, buildFallbackChatReply } from "@/lib/gemini";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { parseJsonBody, sanitizeUserInput } from "@/lib/sanitize";
 
 /**
  * POST /api/chat
  *
  * Smog Coach conversational consultant endpoint. Validates messages with Zod,
- * wraps questions with XML delimiters to protect against prompt injection,
+ * guards payload size, neutralizes XML/tag delimiters to prevent prompt injection,
  * and falls back to deterministic guidance if AI quota is exhausted.
  *
  * @param request - Incoming Next.js HTTP request containing user message and context
@@ -23,15 +24,8 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json(
-      { error: "Invalid JSON in request body." },
-      { status: 400 }
-    );
-  }
+  const { data: body, errorResponse } = await parseJsonBody(request, 32_768);
+  if (errorResponse) return errorResponse;
 
   const parsed = ChatRequestSchema.safeParse(body);
   if (!parsed.success) {
@@ -42,13 +36,26 @@ export async function POST(request: Request) {
     );
   }
 
+  // Sanitize all user-controlled text strings to prevent XML breakout or injection
+  const sanitizedParams = {
+    message: sanitizeUserInput(parsed.data.message, 500),
+    city: sanitizeUserInput(parsed.data.city, 100),
+    usAqi: parsed.data.usAqi,
+    pm25: parsed.data.pm25,
+    householdSummary: sanitizeUserInput(parsed.data.householdSummary || "", 500),
+    history: parsed.data.history?.map((h) => ({
+      role: h.role,
+      content: sanitizeUserInput(h.content, 1000),
+    })),
+  };
+
   try {
-    const result = await generateSmogChatReply(parsed.data);
+    const result = await generateSmogChatReply(sanitizedParams);
     return NextResponse.json(result);
   } catch (err) {
     console.error("[SmogCoach API Error]", err);
-    // Graceful fallback response instead of failing with a 500
-    const fallbackReply = buildFallbackChatReply(parsed.data);
+    // Graceful fallback response instead of failing with a 500 or leaking internal error
+    const fallbackReply = buildFallbackChatReply(sanitizedParams);
     return NextResponse.json({
       reply: fallbackReply,
       fallback: true,

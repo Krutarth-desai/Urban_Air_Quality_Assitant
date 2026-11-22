@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { fetchAirQuality, searchCities } from "@/lib/air-quality";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { sanitizeUserInput } from "@/lib/sanitize";
 
 /**
  * GET /api/aqi
@@ -31,7 +32,8 @@ export async function GET(request: Request) {
       if (query.length > 80) {
         return NextResponse.json({ error: "Query too long" }, { status: 400 });
       }
-      const cities = await searchCities(query);
+      const cleanQuery = sanitizeUserInput(query, 80);
+      const cities = await searchCities(cleanQuery);
       return NextResponse.json({ cities });
     }
 

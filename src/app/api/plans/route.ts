@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { SavePlanRequestSchema } from "@/lib/schemas";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { parseJsonBody, sanitizeUserInput } from "@/lib/sanitize";
 
 /**
  * GET /api/plans
@@ -63,6 +64,7 @@ export async function GET(request: Request) {
  *
  * Saves a generated action plan and completed commitments to Supabase Postgres,
  * scoped to the authenticated user ID under Row-Level Security.
+ * Enforces payload limits and input sanitization.
  *
  * @param request - Incoming Next.js HTTP request with city, AQI, plan JSON, and commitments
  * @returns JSON response with created SavedPlanRow record
@@ -88,7 +90,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
+    const { data: body, errorResponse } = await parseJsonBody(request, 65_536);
+    if (errorResponse) return errorResponse;
+
     const parsed = SavePlanRequestSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
@@ -97,11 +101,13 @@ export async function POST(request: Request) {
       );
     }
 
+    const sanitizedCity = sanitizeUserInput(parsed.data.city, 100);
+
     const { data, error } = await supabase
       .from("saved_plans")
       .insert({
         user_id: user.id,
-        city: parsed.data.city,
+        city: sanitizedCity,
         aqi_value: parsed.data.aqi_value,
         plan_json: parsed.data.plan_json,
         completed_actions: parsed.data.completed_actions,
@@ -160,10 +166,10 @@ export async function DELETE(request: Request) {
     let planId = searchParams.get("id");
 
     if (!planId) {
-      try {
-        const body = await request.json();
-        planId = body?.id;
-      } catch {}
+      const { data: body } = await parseJsonBody<{ id?: string }>(request, 8_192);
+      if (body?.id) {
+        planId = body.id;
+      }
     }
 
     if (!planId) {
@@ -173,10 +179,12 @@ export async function DELETE(request: Request) {
       );
     }
 
+    const cleanPlanId = sanitizeUserInput(planId, 100);
+
     const { error } = await supabase
       .from("saved_plans")
       .delete()
-      .eq("id", planId)
+      .eq("id", cleanPlanId)
       .eq("user_id", user.id);
 
     if (error) {
@@ -187,7 +195,7 @@ export async function DELETE(request: Request) {
       );
     }
 
-    return NextResponse.json({ success: true, deletedId: planId });
+    return NextResponse.json({ success: true, deletedId: cleanPlanId });
   } catch (err: unknown) {
     console.error("[/api/plans DELETE] Internal error:", err);
     return NextResponse.json(

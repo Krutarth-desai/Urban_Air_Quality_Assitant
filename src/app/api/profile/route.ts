@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { SupabaseProfileSchema } from "@/lib/schemas";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { parseJsonBody, sanitizeUserInput } from "@/lib/sanitize";
 
 /**
  * GET /api/profile
@@ -62,6 +63,7 @@ export async function GET(request: Request) {
  *
  * Upserts household profile settings (city, vulnerabilities, purifier, commute)
  * to Supabase Postgres, scoped to the authenticated user ID under Row-Level Security.
+ * Enforces payload limits and input sanitization.
  *
  * @param request - Incoming Next.js HTTP request with profile payload
  * @returns JSON response with upserted household profile record
@@ -87,7 +89,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
+    const { data: body, errorResponse } = await parseJsonBody(request, 16_384);
+    if (errorResponse) return errorResponse;
+
     const parsed = SupabaseProfileSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
@@ -96,12 +100,14 @@ export async function POST(request: Request) {
       );
     }
 
+    const sanitizedCity = sanitizeUserInput(parsed.data.city, 100);
+
     const { data, error } = await supabase
       .from("household_profiles")
       .upsert(
         {
           user_id: user.id,
-          city: parsed.data.city,
+          city: sanitizedCity,
           has_kids: parsed.data.has_kids,
           has_seniors: parsed.data.has_seniors,
           has_respiratory_condition: parsed.data.has_respiratory_condition,
