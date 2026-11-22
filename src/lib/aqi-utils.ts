@@ -50,7 +50,7 @@ export const IMPACT_CONSTANTS = {
  */
 export function calculateCollectiveImpact(
   householdCo2SavedKg: number,
-  households = IMPACT_CONSTANTS.COMMUNITY_SCALE_HOUSEHOLDS
+  households: number = IMPACT_CONSTANTS.COMMUNITY_SCALE_HOUSEHOLDS
 ): {
   collectiveCo2Kg: number;
   vehicleKmEliminated: number;

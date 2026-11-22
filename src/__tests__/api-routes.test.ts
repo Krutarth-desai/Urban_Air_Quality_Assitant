@@ -24,6 +24,8 @@ vi.mock("@/lib/supabase/server", () => ({
 describe("API Route: /api/aqi", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
   it("returns 400 when neither query nor coordinates are provided", async () => {
@@ -110,6 +112,81 @@ describe("API Route: /api/aqi", () => {
 });
 
 describe("API Route: /api/chat", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  it("returns 400 Bad Request when JSON is syntactically malformed", async () => {
+    const req = new Request("http://localhost:3000/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{ invalid json: syntax without quotes }",
+    });
+
+    const res = await chatHandler(req);
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.error).toContain("Invalid JSON format");
+  });
+
+  it("returns 413 Payload Too Large when request body exceeds maximum allowed buffer size", async () => {
+    const req = new Request("http://localhost:3000/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "content-length": "45000",
+      },
+      body: JSON.stringify({ message: "oversized payload test" }),
+    });
+
+    const res = await chatHandler(req);
+    expect(res.status).toBe(413);
+    const data = await res.json();
+    expect(data.error).toContain("Payload too large");
+  });
+
+  it("returns 429 Too Many Requests with Retry-After header when rate limit is exceeded", async () => {
+    const ip = "198.51.100.88";
+    const payload = {
+      message: "Is air safe today?",
+      city: "Delhi",
+      usAqi: 150,
+      pm25: 65,
+    };
+
+    // Consume the 30 requests quota for this IP
+    for (let i = 0; i < 30; i++) {
+      const req = new Request("http://localhost:3000/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-forwarded-for": ip,
+        },
+        body: JSON.stringify(payload),
+      });
+      await chatHandler(req);
+    }
+
+    // 31st request exceeds rate quota
+    const blockedReq = new Request("http://localhost:3000/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-forwarded-for": ip,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const res = await chatHandler(blockedReq);
+    expect(res.status).toBe(429);
+    const data = await res.json();
+    expect(data.error).toContain("Too many chat messages");
+    expect(res.headers.get("Retry-After")).toBeDefined();
+    expect(Number(res.headers.get("Retry-After"))).toBeGreaterThan(0);
+  });
+
   it("returns 400 on malformed or empty request payload", async () => {
     const req = new Request("http://localhost:3000/api/chat", {
       method: "POST",
@@ -148,6 +225,41 @@ describe("API Route: /api/chat", () => {
 });
 
 describe("API Route: /api/plan", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  it("returns 400 when JSON format is corrupted", async () => {
+    const req = new Request("http://localhost:3000/api/plan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{ not valid json: missing end",
+    });
+
+    const res = await planHandler(req);
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.error).toContain("Invalid JSON format");
+  });
+
+  it("returns 413 when plan payload exceeds maximum allowed size", async () => {
+    const req = new Request("http://localhost:3000/api/plan", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "content-length": "80000",
+      },
+      body: JSON.stringify({ huge: "data" }),
+    });
+
+    const res = await planHandler(req);
+    expect(res.status).toBe(413);
+    const data = await res.json();
+    expect(data.error).toContain("Payload too large");
+  });
+
   it("returns 400 when plan request body fails Zod validation", async () => {
     const req = new Request("http://localhost:3000/api/plan", {
       method: "POST",

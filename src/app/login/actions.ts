@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { AuthCredentialsSchema } from "@/lib/schemas";
 
 export interface AuthState {
   error: string | null;
@@ -19,9 +20,11 @@ export async function login(
   const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
 
-  if (!email || !password) {
+  const validation = AuthCredentialsSchema.safeParse({ email, password });
+  if (!validation.success) {
     return {
-      error: "Please enter both email and password.",
+      error:
+        validation.error.issues[0]?.message || "Invalid credentials provided.",
       success: null,
     };
   }
@@ -29,8 +32,8 @@ export async function login(
   try {
     const supabase = await createClient();
     const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+      email: validation.data.email,
+      password: validation.data.password,
     });
 
     if (error) {
@@ -65,16 +68,11 @@ export async function signup(
   const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
 
-  if (!email || !password) {
+  const validation = AuthCredentialsSchema.safeParse({ email, password });
+  if (!validation.success) {
     return {
-      error: "Please enter both email and password.",
-      success: null,
-    };
-  }
-
-  if (password.length < 6) {
-    return {
-      error: "Password must be at least 6 characters long.",
+      error:
+        validation.error.issues[0]?.message || "Invalid credentials provided.",
       success: null,
     };
   }
@@ -82,8 +80,8 @@ export async function signup(
   try {
     const supabase = await createClient();
     const { error } = await supabase.auth.signUp({
-      email,
-      password,
+      email: validation.data.email,
+      password: validation.data.password,
     });
 
     if (error) {

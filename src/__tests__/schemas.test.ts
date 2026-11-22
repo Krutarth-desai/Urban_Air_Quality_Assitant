@@ -222,7 +222,7 @@ describe("SupabaseProfileSchema and SavePlanRequestSchema", () => {
 });
 
 describe("AuthCredentialsSchema", () => {
-  it("accepts valid email and password >= 6 characters", () => {
+  it("accepts valid email and password >= 8 characters", () => {
     const valid = {
       email: "resident@smogshield.org",
       password: "securePassword123",
@@ -239,7 +239,7 @@ describe("AuthCredentialsSchema", () => {
     expect(AuthCredentialsSchema.safeParse(invalidEmail).success).toBe(false);
   });
 
-  it("rejects passwords under 6 characters", () => {
+  it("rejects passwords under 8 characters", () => {
     const shortPassword = {
       email: "resident@smogshield.org",
       password: "12345",
