@@ -1,5 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { GeneratedActionPlan, HouseholdProfile } from "./schemas";
+import type { AqiSnapshot } from "@/types/smogshield";
 
 function getGeminiClient(): GoogleGenAI | null {
   const apiKey = process.env.GEMINI_API_KEY?.trim();
@@ -11,17 +12,6 @@ function getGeminiClient(): GoogleGenAI | null {
 
 function getModelName(): string {
   return process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash";
-}
-
-interface AqiSnapshot {
-  usAqi: number;
-  pm25: number;
-  pm10: number;
-  no2: number;
-  o3: number;
-  category: string;
-  safestWindow: string;
-  peakSmogWindow: string;
 }
 
 const actionItemSchema = {
@@ -50,6 +40,14 @@ const actionItemSchema = {
   ],
 };
 
+/**
+ * Generates a tailored mitigation action plan for a household navigating urban air pollution.
+ * Uses Google Gemini structured output when available, with automatic fallback to a deterministic engine.
+ *
+ * @param profile - Resident vulnerabilities, commute, housing, and cooking parameters
+ * @param aqi - Real-time atmospheric pollutant concentrations and inversion windows
+ * @returns Object with the parsed plan and generation source ("gemini" | "fallback")
+ */
 export async function generateTailoredAirPlan(
   profile: HouseholdProfile,
   aqi: AqiSnapshot
@@ -205,6 +203,13 @@ export function buildFallbackChatReply(params: {
   }`;
 }
 
+/**
+ * Generates an environmental health consultation reply using Gemini 2.5 Flash,
+ * with conversational context awareness, strict scope enforcement, and offline fallback.
+ *
+ * @param params - User question, telemetry metrics (city, AQI, PM2.5), and conversation history
+ * @returns Object containing the assistant reply string and whether fallback was used
+ */
 export async function generateSmogChatReply(params: {
   message: string;
   city: string;

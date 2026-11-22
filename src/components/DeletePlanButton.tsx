@@ -8,6 +8,9 @@ interface DeletePlanButtonProps {
   planId: string;
 }
 
+/**
+ * Action button to delete a saved plan with confirmation prompt and loading spinner.
+ */
 export function DeletePlanButton({ planId }: DeletePlanButtonProps) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();

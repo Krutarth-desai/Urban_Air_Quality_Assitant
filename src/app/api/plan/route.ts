@@ -3,6 +3,15 @@ import { PlanRequestSchema } from "@/lib/schemas";
 import { generateTailoredAirPlan } from "@/lib/gemini";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
+/**
+ * POST /api/plan
+ *
+ * Generates a calibrated winter smog and particulate mitigation plan for a household profile.
+ * Validates request payload against Zod schema and enforces server-side rate limits.
+ *
+ * @param request - Incoming Next.js HTTP request containing profile and telemetry snapshot
+ * @returns JSON response with GeneratedActionPlan and generation source
+ */
 export async function POST(request: Request) {
   const ip = getClientIp(request);
   const rate = checkRateLimit(`plan:${ip}`, 10, 60_000);

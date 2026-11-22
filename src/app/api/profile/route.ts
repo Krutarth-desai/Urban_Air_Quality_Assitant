@@ -3,6 +3,15 @@ import { createClient } from "@/lib/supabase/server";
 import { SupabaseProfileSchema } from "@/lib/schemas";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
+/**
+ * GET /api/profile
+ *
+ * Retrieves the authenticated user's saved household profile from Supabase Postgres.
+ * Requires an active user session; returns 401 if unauthenticated.
+ *
+ * @param request - Incoming Next.js HTTP request
+ * @returns JSON response with saved Supabase household profile or null
+ */
 export async function GET(request: Request) {
   const ip = getClientIp(request);
   const rate = checkRateLimit(`profile-get:${ip}`, 30, 60_000);
@@ -48,6 +57,15 @@ export async function GET(request: Request) {
   }
 }
 
+/**
+ * POST /api/profile
+ *
+ * Upserts household profile settings (city, vulnerabilities, purifier, commute)
+ * to Supabase Postgres, scoped to the authenticated user ID under Row-Level Security.
+ *
+ * @param request - Incoming Next.js HTTP request with profile payload
+ * @returns JSON response with upserted household profile record
+ */
 export async function POST(request: Request) {
   const ip = getClientIp(request);
   const rate = checkRateLimit(`profile-post:${ip}`, 20, 60_000);

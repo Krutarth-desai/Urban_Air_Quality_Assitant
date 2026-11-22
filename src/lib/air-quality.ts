@@ -1,56 +1,34 @@
 import { appCache } from "./cache";
+import { classifyUsAqi as classifyAqiUtil } from "./aqi-utils";
+import type { AirQualityReport, CityLocation, HourlyPoint } from "@/types/smogshield";
 
-export interface CityLocation {
-  name: string;
-  country: string;
-  admin1?: string;
-  latitude: number;
-  longitude: number;
-}
+export type { CityLocation, HourlyPoint, AirQualityReport };
 
-export interface HourlyPoint {
-  time: string;
-  hourLabel: string;
-  pm25: number;
-  usAqi: number;
-}
-
-export interface AirQualityReport {
-  usAqi: number;
-  pm25: number;
-  pm10: number;
-  no2: number;
-  o3: number;
-  category:
-    | "Good"
-    | "Moderate"
-    | "Unhealthy for Sensitive Groups"
-    | "Unhealthy"
-    | "Very Unhealthy"
-    | "Hazardous";
-  colorToken: "emerald" | "amber" | "orange" | "red" | "severe" | "hazardous";
-  safestWindow: string;
-  peakSmogWindow: string;
-  hourlyForecast: HourlyPoint[];
-  updatedAt: string;
-}
-
+/**
+ * Classifies a US AQI index value into category name and color token.
+ * Provided for backward compatibility; calls `classifyUsAqi` from `@/lib/aqi-utils`.
+ *
+ * @param aqi - Numerical US AQI score
+ * @returns Object with category and colorToken
+ */
 export function classifyUsAqi(aqi: number): {
   category: AirQualityReport["category"];
   colorToken: AirQualityReport["colorToken"];
 } {
-  if (aqi <= 50) return { category: "Good", colorToken: "emerald" };
-  if (aqi <= 100) return { category: "Moderate", colorToken: "amber" };
-  if (aqi <= 150)
-    return {
-      category: "Unhealthy for Sensitive Groups",
-      colorToken: "orange",
-    };
-  if (aqi <= 200) return { category: "Unhealthy", colorToken: "red" };
-  if (aqi <= 300) return { category: "Very Unhealthy", colorToken: "severe" };
-  return { category: "Hazardous", colorToken: "hazardous" };
+  const result = classifyAqiUtil(aqi);
+  return {
+    category: result.category,
+    colorToken: result.colorToken,
+  };
 }
 
+/**
+ * Searches for global cities and geographic coordinates via Open-Meteo Geocoding API.
+ * Results are cached in-memory with a 30-minute TTL.
+ *
+ * @param query - City name or search string
+ * @returns Array of matching CityLocation records
+ */
 export async function searchCities(query: string): Promise<CityLocation[]> {
   const clean = query.trim().toLowerCase();
   if (clean.length < 2) return [];
@@ -66,7 +44,7 @@ export async function searchCities(query: string): Promise<CityLocation[]> {
   const res = await fetch(url, { next: { revalidate: 3600 } });
   if (!res.ok) throw new Error("Failed to search cities");
 
-  const data = await res.json();
+  const data = (await res.json()) as { results?: Array<Record<string, unknown>> };
   const results: CityLocation[] = (data.results ?? []).map(
     (item: Record<string, unknown>) => ({
       name: String(item.name ?? ""),
@@ -81,6 +59,14 @@ export async function searchCities(query: string): Promise<CityLocation[]> {
   return results;
 }
 
+/**
+ * Fetches real-time atmospheric pollutant telemetry and 24-hour forecast from Open-Meteo.
+ * Identifies optimal and peak smog windows for winter temperature inversion scheduling.
+ *
+ * @param lat - Latitude coordinate (-90 to 90)
+ * @param lon - Longitude coordinate (-180 to 180)
+ * @returns Complete AirQualityReport
+ */
 export async function fetchAirQuality(
   lat: number,
   lon: number
@@ -98,7 +84,15 @@ export async function fetchAirQuality(
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch live air quality data");
 
-  const data = await res.json();
+  const data = (await res.json()) as {
+    current?: Record<string, number | undefined>;
+    hourly?: {
+      time?: string[];
+      pm2_5?: number[];
+      us_aqi?: number[];
+    };
+  };
+
   const current = data.current ?? {};
   const hourlyTimes: string[] = data.hourly?.time ?? [];
   const hourlyPm25: number[] = data.hourly?.pm2_5 ?? [];

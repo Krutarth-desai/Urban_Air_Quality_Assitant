@@ -9,6 +9,14 @@ interface RateRecord {
 
 const ipStore = new Map<string, RateRecord>();
 
+/**
+ * Checks whether an incoming client request is within the allowed quota.
+ *
+ * @param identifier - Unique client identifier (e.g., client IP or route prefix)
+ * @param limit - Maximum requests allowed within window (default 15)
+ * @param windowMs - Time window duration in milliseconds (default 60,000)
+ * @returns Object indicating whether request is allowed, remaining quota, and retry wait time in seconds
+ */
 export function checkRateLimit(
   identifier: string,
   limit = 15,
@@ -38,6 +46,12 @@ export function checkRateLimit(
   };
 }
 
+/**
+ * Extracts client IP address from proxy forwarding headers.
+ *
+ * @param request - Incoming HTTP Request object
+ * @returns Client IP string or "anonymous" fallback
+ */
 export function getClientIp(request: Request): string {
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0].trim();

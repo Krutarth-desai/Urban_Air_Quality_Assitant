@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import { login, signup, type AuthState } from "./actions";
 
+/**
+ * User authentication page with Sign In / Sign Up toggle and Guest Mode bypass.
+ */
 export default function LoginPage() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
 

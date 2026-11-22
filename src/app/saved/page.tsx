@@ -9,18 +9,9 @@ import {
   Wind,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { classifyUsAqi } from "@/lib/air-quality";
+import { classifyUsAqi } from "@/lib/aqi-utils";
 import { DeletePlanButton } from "@/components/DeletePlanButton";
 import type { SavedPlanRow } from "@/lib/schemas";
-
-const COLOR_BADGE_MAP: Record<string, string> = {
-  emerald: "border-emerald-200 bg-emerald-50 text-emerald-900",
-  amber: "border-amber-200 bg-amber-50 text-amber-900",
-  orange: "border-orange-200 bg-orange-50 text-orange-900",
-  red: "border-red-200 bg-red-50 text-red-900",
-  severe: "border-red-200 bg-red-50 text-red-900",
-  hazardous: "border-red-200 bg-red-50 text-red-900",
-};
 
 export default async function SavedPlansPage() {
   let user = null;
@@ -106,10 +97,7 @@ export default async function SavedPlansPage() {
       {plans.length > 0 ? (
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           {plans.map((item) => {
-            const { category, colorToken } = classifyUsAqi(item.aqi_value);
-            const badgeClass =
-              COLOR_BADGE_MAP[colorToken] ||
-              "border-stone-200 bg-stone-100 text-stone-800";
+            const { category, badgeClass } = classifyUsAqi(item.aqi_value);
 
             const dateStr = item.created_at
               ? new Date(item.created_at).toLocaleDateString(undefined, {

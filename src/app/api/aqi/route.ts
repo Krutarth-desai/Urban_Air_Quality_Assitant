@@ -2,6 +2,15 @@ import { NextResponse } from "next/server";
 import { fetchAirQuality, searchCities } from "@/lib/air-quality";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
+/**
+ * GET /api/aqi
+ *
+ * Fetches real-time atmospheric pollutant concentrations for a coordinate (?lat=...&lon=...)
+ * or searches global cities (?q=...). Enforces IP-based rate limiting and uses in-memory TTL caching.
+ *
+ * @param request - Incoming Next.js HTTP request
+ * @returns JSON response with CityLocation[] or AirQualityReport
+ */
 export async function GET(request: Request) {
   const ip = getClientIp(request);
   const rate = checkRateLimit(`aqi:${ip}`, 30, 60_000);

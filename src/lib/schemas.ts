@@ -1,4 +1,11 @@
 import { z } from "zod";
+import type {
+  ActionItem,
+  GeneratedActionPlan,
+  SavedPlanRow,
+} from "@/types/smogshield";
+
+export type { ActionItem, GeneratedActionPlan, SavedPlanRow };
 
 /**
  * Household & lifestyle profile used to personalize air quality advice.
@@ -39,6 +46,9 @@ export const HouseholdProfileSchema = z.object({
 
 export type HouseholdProfile = z.infer<typeof HouseholdProfileSchema>;
 
+/**
+ * Request payload schema for generating a personalized plan.
+ */
 export const PlanRequestSchema = z.object({
   profile: HouseholdProfileSchema,
   aqiData: z.object({
@@ -53,6 +63,11 @@ export const PlanRequestSchema = z.object({
   }),
 });
 
+export type PlanRequest = z.infer<typeof PlanRequestSchema>;
+
+/**
+ * Request payload schema for the Smog Coach conversational consultant.
+ */
 export const ChatRequestSchema = z.object({
   message: z.string().trim().min(1).max(500),
   city: z.string().trim().min(1).max(100),
@@ -72,27 +87,9 @@ export const ChatRequestSchema = z.object({
 
 export type ChatRequest = z.infer<typeof ChatRequestSchema>;
 
-export interface ActionItem {
-  id: string;
-  title: string;
-  timingOrFrequency: string;
-  description: string;
-  healthImpact: string;
-  emissionImpact: string;
-  estimatedCo2SavedKgPerWeek: number;
-  estimatedPm25ExposureReductionPct: number;
-  difficulty: "Easy" | "Medium" | "High";
-}
-
-export interface GeneratedActionPlan {
-  severitySummary: string;
-  winterSmogInsight: string;
-  dailyRoutines: ActionItem[];
-  indoorHacks: ActionItem[];
-  sustainableAlternatives: ActionItem[];
-  communityTip: string;
-}
-
+/**
+ * Supabase household profile table schema.
+ */
 export const SupabaseProfileSchema = z.object({
   city: z.string().trim().min(2).max(100),
   has_kids: z.boolean(),
@@ -110,6 +107,9 @@ export const SupabaseProfileSchema = z.object({
 
 export type SupabaseProfile = z.infer<typeof SupabaseProfileSchema>;
 
+/**
+ * Schema for persisting a plan to Supabase Postgres.
+ */
 export const SavePlanRequestSchema = z.object({
   city: z.string().trim().min(2).max(100),
   aqi_value: z.number().min(0).max(1000),
@@ -117,22 +117,14 @@ export const SavePlanRequestSchema = z.object({
   completed_actions: z.array(z.string()).default([]),
 });
 
+export type SavePlanRequest = z.infer<typeof SavePlanRequestSchema>;
+
+/**
+ * Schema for user sign in and registration credentials.
+ */
 export const AuthCredentialsSchema = z.object({
   email: z.string().trim().email("Please provide a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
 });
 
 export type AuthCredentials = z.infer<typeof AuthCredentialsSchema>;
-
-
-export type SavePlanRequest = z.infer<typeof SavePlanRequestSchema>;
-
-export interface SavedPlanRow {
-  id: string;
-  user_id: string;
-  city: string;
-  aqi_value: number;
-  plan_json: GeneratedActionPlan;
-  completed_actions: string[];
-  created_at: string;
-}

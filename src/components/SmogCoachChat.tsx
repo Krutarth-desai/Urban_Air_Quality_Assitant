@@ -9,6 +9,7 @@ import {
   User,
   Shield,
 } from "lucide-react";
+import type { ChatMessage } from "@/types/smogshield";
 
 interface SmogCoachChatProps {
   city: string;
@@ -17,20 +18,13 @@ interface SmogCoachChatProps {
   householdSummary: string;
 }
 
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  timestamp: string;
-}
-
 const STARTER_PROMPTS = [
   "Is it safe for children to engage in outdoor exertion today?",
   "What is the best procedure to seal window drafts against fine soot?",
   "How effective is a DIY Corsi-Rosenthal box vs commercial HEPA?",
 ];
 
-function createChatMessage(role: "user" | "assistant", content: string): Message {
+function createChatMessage(role: "user" | "assistant", content: string): ChatMessage {
   const d = new Date();
   const time = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
   return {
@@ -41,20 +35,23 @@ function createChatMessage(role: "user" | "assistant", content: string): Message
   };
 }
 
+/**
+ * Environmental health consultation chat interface with prompt suggestions and live telemetry grounding.
+ */
 export function SmogCoachChat({
   city,
   usAqi,
   pm25,
   householdSummary,
 }: SmogCoachChatProps) {
-  const [conversation, setConversation] = useState<Message[]>([]);
+  const [conversation, setConversation] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Derive initial greeting directly from telemetry props
-  const initialGreeting: Message = {
+  const initialGreeting: ChatMessage = {
     id: "initial",
     role: "assistant",
     content: `Hello. Ground-level telemetry for ${city} reports US AQI ${usAqi} (PM2.5: ${pm25} µg/m³). Ask any question regarding particulate exposure timing, mask filtration performance, room sealing, or low-emission commute shifts.`,

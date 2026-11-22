@@ -3,6 +3,16 @@ import { ChatRequestSchema } from "@/lib/schemas";
 import { generateSmogChatReply, buildFallbackChatReply } from "@/lib/gemini";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
+/**
+ * POST /api/chat
+ *
+ * Smog Coach conversational consultant endpoint. Validates messages with Zod,
+ * wraps questions with XML delimiters to protect against prompt injection,
+ * and falls back to deterministic guidance if AI quota is exhausted.
+ *
+ * @param request - Incoming Next.js HTTP request containing user message and context
+ * @returns JSON response with assistant reply and fallback status
+ */
 export async function POST(request: Request) {
   const ip = getClientIp(request);
   const rate = checkRateLimit(`chat:${ip}`, 30, 60_000);

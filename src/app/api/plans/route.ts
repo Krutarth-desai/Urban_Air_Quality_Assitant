@@ -3,6 +3,15 @@ import { createClient } from "@/lib/supabase/server";
 import { SavePlanRequestSchema } from "@/lib/schemas";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
+/**
+ * GET /api/plans
+ *
+ * Retrieves the latest 10 saved plans for the authenticated user from Supabase Postgres,
+ * ordered by creation date descending. Returns 401 if unauthenticated.
+ *
+ * @param request - Incoming Next.js HTTP request
+ * @returns JSON response with SavedPlanRow array
+ */
 export async function GET(request: Request) {
   const ip = getClientIp(request);
   const rate = checkRateLimit(`plans-get:${ip}`, 30, 60_000);
@@ -49,6 +58,15 @@ export async function GET(request: Request) {
   }
 }
 
+/**
+ * POST /api/plans
+ *
+ * Saves a generated action plan and completed commitments to Supabase Postgres,
+ * scoped to the authenticated user ID under Row-Level Security.
+ *
+ * @param request - Incoming Next.js HTTP request with city, AQI, plan JSON, and commitments
+ * @returns JSON response with created SavedPlanRow record
+ */
 export async function POST(request: Request) {
   const ip = getClientIp(request);
   const rate = checkRateLimit(`plans-post:${ip}`, 15, 60_000);
@@ -109,6 +127,14 @@ export async function POST(request: Request) {
   }
 }
 
+/**
+ * DELETE /api/plans
+ *
+ * Removes a saved plan by ID from Supabase Postgres, scoped to the authenticated user ID.
+ *
+ * @param request - Incoming Next.js HTTP request with ?id=... or JSON body { id }
+ * @returns JSON response with { success: true, deletedId }
+ */
 export async function DELETE(request: Request) {
   const ip = getClientIp(request);
   const rate = checkRateLimit(`plans-del:${ip}`, 30, 60_000);
