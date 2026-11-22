@@ -214,41 +214,6 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950 text-slate-100">
-      {/* Top Banner / Navbar */}
-      <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 text-slate-950 shadow-md shadow-teal-500/20">
-              <Shield className="h-5 w-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-base font-extrabold tracking-tight text-white sm:text-lg">
-                  SmogShield
-                </span>
-                <span className="rounded-full border border-teal-500/30 bg-teal-500/10 px-2 py-0.5 text-[10px] font-bold text-teal-300 uppercase tracking-wider">
-                  Winter Smog Edition
-                </span>
-              </div>
-              <p className="hidden text-[11px] text-slate-400 sm:block">
-                Real-Time PM2.5 Routines, IAQ Hacks & Low-Emission Living
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 text-xs">
-            <div className="hidden items-center gap-1.5 rounded-full border border-slate-800 bg-slate-900 px-3 py-1 text-slate-300 md:flex">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Live Open-Meteo Feeds</span>
-            </div>
-            <div className="flex items-center gap-1.5 rounded-full border border-teal-500/30 bg-teal-500/10 px-3 py-1 font-medium text-teal-300">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Gemini 2.5 Flash</span>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Header */}
       <section className="relative overflow-hidden border-b border-slate-800/60 bg-gradient-to-b from-slate-900/60 to-slate-950 px-4 py-8 sm:px-6 sm:py-12">
         <div className="mx-auto max-w-4xl text-center">
