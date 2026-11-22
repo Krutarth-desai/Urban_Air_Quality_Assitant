@@ -55,31 +55,31 @@ export default async function SavedPlansPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-      {/* Top back navigation */}
-      <div className="mb-6 flex items-center justify-between">
+      {/* Top back navigation landmark */}
+      <nav aria-label="Page Navigation" className="mb-6 flex items-center justify-between">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-600 transition hover:text-stone-950"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-700 transition hover:text-stone-950 rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900"
         >
-          <ArrowLeft className="h-3.5 w-3.5" />
+          <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
           <span>Back to Telemetry Console</span>
         </Link>
-        <span className="font-mono text-xs text-stone-500">
-          User: <strong className="text-stone-800">{user.email}</strong>
+        <span className="font-mono text-xs text-stone-600">
+          User: <strong className="text-stone-900">{user.email}</strong>
         </span>
-      </div>
+      </nav>
 
-      {/* Page Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-stone-200">
+      {/* Page Header with Single H1 */}
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-stone-200">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#164E3B] text-white">
-            <Bookmark className="h-5 w-5" />
+            <Bookmark className="h-5 w-5" aria-hidden="true" />
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-stone-950">
               Saved Mitigation Plans
             </h1>
-            <p className="text-xs text-stone-500">
+            <p className="text-xs text-stone-600">
               Review, track, and manage your cloud-synced particulate routines.
             </p>
           </div>
@@ -87,15 +87,15 @@ export default async function SavedPlansPage() {
 
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 self-start rounded-lg bg-[#164E3B] px-4 py-2 text-xs font-semibold text-white shadow-2xs transition hover:bg-[#113D2E] active:scale-95"
+          className="inline-flex items-center gap-1.5 self-start rounded-lg bg-[#164E3B] px-4 py-2 text-xs font-semibold text-white shadow-2xs transition hover:bg-[#113D2E] active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900"
         >
           <span>Generate New Plan</span>
         </Link>
-      </div>
+      </header>
 
-      {/* Responsive Card Grid */}
+      {/* Responsive Card Grid with Landmark */}
       {plans.length > 0 ? (
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <section aria-label="Saved Plans List" className="mt-6 grid gap-4 md:grid-cols-2">
           {plans.map((item) => {
             const { category, badgeClass } = classifyUsAqi(item.aqi_value);
 
@@ -115,7 +115,7 @@ export default async function SavedPlansPage() {
               "Personalized household mitigation routine.";
 
             return (
-              <div
+              <article
                 key={item.id}
                 className="flex flex-col justify-between rounded-xl border border-stone-200/90 bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition hover:border-stone-300"
               >
@@ -123,7 +123,7 @@ export default async function SavedPlansPage() {
                   {/* Card Header: City + AQI badge + Delete button */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <Wind className="h-4 w-4 text-stone-700" />
+                      <Wind className="h-4 w-4 text-stone-700" aria-hidden="true" />
                       <h2 className="text-base font-bold text-stone-950">
                         {item.city}
                       </h2>
@@ -140,48 +140,48 @@ export default async function SavedPlansPage() {
                   </div>
 
                   {/* Summary */}
-                  <p className="text-xs text-stone-600 leading-relaxed line-clamp-3">
+                  <p className="text-xs text-stone-700 leading-relaxed line-clamp-3">
                     {summary}
                   </p>
                 </div>
 
                 {/* Card Footer: Date & Committed actions */}
-                <div className="mt-5 flex items-center justify-between border-t border-stone-100 pt-3 text-[11px] text-stone-500">
+                <div className="mt-5 flex items-center justify-between border-t border-stone-100 pt-3 text-[11px] text-stone-600">
                   <span className="flex items-center gap-1.5 font-mono">
-                    <Calendar className="h-3 w-3 text-stone-400" />
+                    <Calendar className="h-3 w-3 text-stone-500" aria-hidden="true" />
                     <span>{dateStr}</span>
                   </span>
 
-                  <span className="inline-flex items-center gap-1 font-mono font-medium text-emerald-800">
-                    <CheckCircle2 className="h-3 w-3 text-emerald-700" />
+                  <span className="inline-flex items-center gap-1 font-mono font-medium text-emerald-900">
+                    <CheckCircle2 className="h-3 w-3 text-emerald-700" aria-hidden="true" />
                     <span>
-                      {item.completed_actions?.length || 0} active
+                      {item.completed_actions?.length || 0} active commitments
                     </span>
                   </span>
                 </div>
-              </div>
+              </article>
             );
           })}
-        </div>
+        </section>
       ) : (
-        <div className="mt-8 rounded-xl border border-dashed border-stone-300 bg-white p-8 text-center shadow-[0_1px_2px_rgba(0,0,0,0.04)] sm:p-12">
-          <Bookmark className="mx-auto h-8 w-8 text-stone-400" />
+        <section aria-label="Empty State" className="mt-8 rounded-xl border border-dashed border-stone-300 bg-white p-8 text-center shadow-[0_1px_2px_rgba(0,0,0,0.04)] sm:p-12">
+          <Bookmark className="mx-auto h-8 w-8 text-stone-400" aria-hidden="true" />
           <h2 className="mt-3 text-sm font-semibold text-stone-900">
             No saved plans found
           </h2>
-          <p className="mx-auto mt-1 max-w-sm text-xs text-stone-500 leading-relaxed">
+          <p className="mx-auto mt-1 max-w-sm text-xs text-stone-600 leading-relaxed">
             Generate an action plan on the live console and click &ldquo;Save Plan&rdquo; to store your mitigation routines in your account.
           </p>
 
           <div className="mt-5">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#164E3B] px-4 py-2 text-xs font-semibold text-white shadow-2xs transition hover:bg-[#113D2E]"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[#164E3B] px-4 py-2 text-xs font-semibold text-white shadow-2xs transition hover:bg-[#113D2E] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900"
             >
               <span>Go to Telemetry Console</span>
             </Link>
           </div>
-        </div>
+        </section>
       )}
     </div>
   );

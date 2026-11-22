@@ -41,13 +41,13 @@ export function DeletePlanButton({ planId }: DeletePlanButtonProps) {
       type="button"
       onClick={handleDelete}
       disabled={loading}
-      className="inline-flex items-center gap-1 rounded-md border border-stone-200 bg-white px-2 py-1 text-xs font-medium text-stone-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
+      className="inline-flex items-center gap-1 rounded-md border border-stone-200 bg-white px-2 py-1 text-xs font-medium text-stone-700 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 disabled:opacity-50"
       aria-label="Delete saved plan"
     >
       {loading ? (
-        <Loader2 className="h-3 w-3 animate-spin text-stone-500" />
+        <Loader2 className="h-3 w-3 animate-spin text-stone-500" aria-hidden="true" />
       ) : (
-        <Trash2 className="h-3 w-3" />
+        <Trash2 className="h-3 w-3" aria-hidden="true" />
       )}
       <span className="hidden sm:inline">Delete</span>
     </button>

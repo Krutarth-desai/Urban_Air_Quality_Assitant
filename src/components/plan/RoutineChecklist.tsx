@@ -36,21 +36,23 @@ export function RoutineChecklist({
               <div className="flex items-start gap-3">
                 <button
                   type="button"
+                  role="checkbox"
+                  aria-checked={isCommitted}
+                  aria-label={`Commit to action: ${item.title}`}
                   onClick={() => onToggleCommit(item.id)}
-                  className="mt-0.5 text-stone-800 transition hover:text-stone-950"
-                  aria-label={`Commit to ${item.title}`}
+                  className="mt-0.5 text-stone-800 transition hover:text-stone-950 rounded p-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900"
                 >
                   {isCommitted ? (
-                    <CheckSquare className="h-4 w-4 text-[#164E3B]" />
+                    <CheckSquare className="h-4 w-4 text-[#164E3B]" aria-hidden="true" />
                   ) : (
-                    <Square className="h-4 w-4 text-stone-400 hover:text-stone-600" />
+                    <Square className="h-4 w-4 text-stone-500 hover:text-stone-700" aria-hidden="true" />
                   )}
                 </button>
 
                 <div>
-                  <h4 className="text-sm font-semibold text-stone-950">
+                  <h3 className="text-sm font-semibold text-stone-950">
                     {item.title}
-                  </h4>
+                  </h3>
                   <p className="mt-0.5 text-xs text-stone-600 leading-relaxed">
                     {item.description}
                   </p>
@@ -58,8 +60,8 @@ export function RoutineChecklist({
               </div>
 
               <div className="flex shrink-0 items-center gap-2">
-                <span className="inline-flex items-center gap-1 font-mono text-[11px] text-stone-500">
-                  <Clock className="h-3 w-3 text-stone-400" />
+                <span className="inline-flex items-center gap-1 font-mono text-[11px] text-stone-600">
+                  <Clock className="h-3 w-3 text-stone-500" aria-hidden="true" />
                   {item.timingOrFrequency}
                 </span>
                 <span
@@ -75,14 +77,14 @@ export function RoutineChecklist({
               <div className="rounded-lg border border-emerald-200/80 bg-emerald-50/50 p-2.5">
                 <div className="flex items-center justify-between text-[11px]">
                   <span className="flex items-center gap-1.5 font-semibold text-emerald-950">
-                    <Heart className="h-3 w-3 text-emerald-700" />
+                    <Heart className="h-3 w-3 text-emerald-700" aria-hidden="true" />
                     <span>Direct Health Exposure Impact</span>
                   </span>
                   <span className="font-mono font-semibold tabular-nums text-emerald-800 text-[10px]">
                     -{item.estimatedPm25ExposureReductionPct}% PM2.5
                   </span>
                 </div>
-                <p className="mt-1 text-[11px] text-stone-600 leading-normal">
+                <p className="mt-1 text-[11px] text-stone-700 leading-normal">
                   {item.healthImpact}
                 </p>
               </div>
@@ -90,14 +92,14 @@ export function RoutineChecklist({
               <div className="rounded-lg border border-stone-200 bg-stone-50 p-2.5">
                 <div className="flex items-center justify-between text-[11px]">
                   <span className="flex items-center gap-1.5 font-semibold text-stone-900">
-                    <Leaf className="h-3 w-3 text-stone-700" />
+                    <Leaf className="h-3 w-3 text-stone-700" aria-hidden="true" />
                     <span>Direct Emissions Impact</span>
                   </span>
                   <span className="font-mono font-semibold tabular-nums text-stone-800 text-[10px]">
                     +{item.estimatedCo2SavedKgPerWeek} kg CO2/wk
                   </span>
                 </div>
-                <p className="mt-1 text-[11px] text-stone-600 leading-normal">
+                <p className="mt-1 text-[11px] text-stone-700 leading-normal">
                   {item.emissionImpact}
                 </p>
               </div>

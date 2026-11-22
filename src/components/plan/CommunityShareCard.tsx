@@ -61,16 +61,17 @@ Telemetry source: SmogShield`;
       <button
         type="button"
         onClick={handleCopyAlert}
-        className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-xs font-medium text-stone-800 shadow-2xs transition hover:bg-stone-50 active:scale-95"
+        aria-label="Copy neighborhood air quality advisory to clipboard"
+        className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-xs font-medium text-stone-800 shadow-2xs transition hover:bg-stone-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 active:scale-95"
       >
         {copied ? (
           <>
-            <Check className="h-3.5 w-3.5 text-emerald-700" />
+            <Check className="h-3.5 w-3.5 text-emerald-700" aria-hidden="true" />
             <span>Copied</span>
           </>
         ) : (
           <>
-            <Copy className="h-3.5 w-3.5 text-stone-500" />
+            <Copy className="h-3.5 w-3.5 text-stone-600" aria-hidden="true" />
             <span>Copy Advisory</span>
           </>
         )}

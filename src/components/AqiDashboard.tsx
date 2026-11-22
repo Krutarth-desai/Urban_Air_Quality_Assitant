@@ -72,15 +72,16 @@ export function AqiDashboard({
           <button
             type="button"
             onClick={onUseMyLocation}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-stone-300 bg-white px-3 py-2 text-xs font-medium text-stone-700 shadow-2xs hover:bg-stone-50 hover:text-stone-950 transition"
+            aria-label="Detect air quality using my current location"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-stone-300 bg-white px-3 py-2 text-xs font-medium text-stone-700 shadow-2xs hover:bg-stone-50 hover:text-stone-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 transition"
           >
-            <MapPin className="h-3.5 w-3.5 text-stone-500" />
+            <MapPin className="h-3.5 w-3.5 text-stone-500" aria-hidden="true" />
             <span>My Location</span>
           </button>
 
-          <div className="hidden h-4 w-px bg-stone-200 sm:block" />
+          <div className="hidden h-4 w-px bg-stone-200 sm:block" aria-hidden="true" />
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5" role="group" aria-label="Preset major cities">
             {PRESET_CITIES.map((city) => {
               const isSelected =
                 cityName.toLowerCase() === city.name.toLowerCase();
@@ -89,10 +90,11 @@ export function AqiDashboard({
                   key={city.name}
                   type="button"
                   onClick={() => onSelectCity(city)}
-                  className={`rounded-md px-2.5 py-1 text-xs font-medium transition ${
+                  aria-pressed={isSelected}
+                  className={`rounded-md px-2.5 py-1 text-xs font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 ${
                     isSelected
                       ? "bg-stone-900 text-white"
-                      : "border border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 hover:text-stone-900"
+                      : "border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 hover:text-stone-900"
                   }`}
                 >
                   {city.name}
@@ -104,11 +106,11 @@ export function AqiDashboard({
       </div>
 
       {/* Sensor Readout Telemetry Strip */}
-      <div className="relative pt-5">
+      <div className="relative pt-5" aria-live="polite">
         {loading && (
           <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/70 backdrop-blur-[1px]">
             <div className="flex items-center gap-2 rounded-md border border-stone-200 bg-white px-3 py-1.5 shadow-sm">
-              <Loader2 className="h-4 w-4 animate-spin text-stone-600" />
+              <Loader2 className="h-4 w-4 animate-spin text-stone-600" aria-hidden="true" />
               <span className="text-xs font-medium text-stone-700">
                 Synchronizing sensor telemetry...
               </span>
@@ -119,13 +121,13 @@ export function AqiDashboard({
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-center">
           {/* Left Console: Location + Primary Index Score (5 cols) */}
           <div className="lg:col-span-5">
-            <div className="flex items-center gap-2 text-stone-500">
-              <Wind className="h-4 w-4 text-stone-700" />
+            <div className="flex items-center gap-2 text-stone-600">
+              <Wind className="h-4 w-4 text-stone-700" aria-hidden="true" />
               <h2 className="text-lg font-bold tracking-tight text-stone-950">
                 {cityName}
               </h2>
             </div>
-            <p className="mt-0.5 text-xs text-stone-500 font-mono">
+            <p className="mt-0.5 text-xs text-stone-600 font-mono">
               Ground-level telemetry • Open-Meteo Atmospheric Model
             </p>
 
@@ -135,7 +137,7 @@ export function AqiDashboard({
                   <span className="text-5xl font-mono font-semibold tabular-nums tracking-tight text-stone-950">
                     {report.usAqi}
                   </span>
-                  <span className="text-xs font-medium uppercase tracking-wider text-stone-500 font-mono">
+                  <span className="text-xs font-medium uppercase tracking-wider text-stone-600 font-mono">
                     US AQI
                   </span>
                 </div>
@@ -145,6 +147,7 @@ export function AqiDashboard({
                 >
                   <span
                     className={`h-1.5 w-1.5 rounded-full ${classification.dotClass}`}
+                    aria-hidden="true"
                   />
                   <span>{report.category}</span>
                 </div>
@@ -168,8 +171,8 @@ export function AqiDashboard({
         {report && <ForecastStrip forecast={report.hourlyForecast} />}
 
         {!report && !loading && (
-          <div className="py-8 text-center text-stone-500">
-            <AlertTriangle className="mx-auto h-6 w-6 text-stone-400" />
+          <div className="py-8 text-center text-stone-600">
+            <AlertTriangle className="mx-auto h-6 w-6 text-stone-500" aria-hidden="true" />
             <p className="mt-2 text-xs font-medium">
               No telemetry available for this coordinate. Please select another city.
             </p>

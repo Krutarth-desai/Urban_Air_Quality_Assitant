@@ -63,10 +63,10 @@ export function HousingSelector({
     <>
       {/* 3. Home Type */}
       <div>
-        <label className="text-[11px] font-medium uppercase tracking-wider text-stone-500 font-mono">
+        <span className="text-[11px] font-medium uppercase tracking-wider text-stone-600 font-mono">
           3. Structure & Boundary Layer
-        </label>
-        <div className="mt-2 space-y-1.5">
+        </span>
+        <div className="mt-2 space-y-1.5" role="group" aria-label="Housing building structure">
           {HOME_OPTIONS.map((home) => {
             const selected = homeType === home.id;
             const Icon = home.icon;
@@ -75,7 +75,8 @@ export function HousingSelector({
                 key={home.id}
                 type="button"
                 onClick={() => onUpdateHomeType(home.id)}
-                className={`flex w-full items-center gap-2.5 rounded-lg border px-3 py-2 text-left transition ${
+                aria-pressed={selected}
+                className={`flex w-full items-center gap-2.5 rounded-lg border px-3 py-2 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 ${
                   selected
                     ? "border-stone-900 bg-stone-50 text-stone-950 ring-1 ring-stone-900/10"
                     : "border-stone-200 bg-white text-stone-700 hover:border-stone-300"
@@ -83,12 +84,13 @@ export function HousingSelector({
               >
                 <Icon
                   className={`h-4 w-4 shrink-0 ${
-                    selected ? "text-stone-950" : "text-stone-400"
+                    selected ? "text-stone-950" : "text-stone-500"
                   }`}
+                  aria-hidden="true"
                 />
                 <div className="min-w-0">
                   <div className="text-xs font-semibold">{home.label}</div>
-                  <div className="text-[10px] text-stone-500">{home.sub}</div>
+                  <div className="text-[10px] text-stone-600">{home.sub}</div>
                 </div>
               </button>
             );
@@ -99,17 +101,22 @@ export function HousingSelector({
       {/* 4. HEPA Air Purifier & Cooking Fuel */}
       <div className="grid grid-cols-2 gap-3 pt-1">
         <div>
-          <label className="text-[10px] font-medium uppercase tracking-wider text-stone-500 font-mono">
+          <span className="text-[10px] font-medium uppercase tracking-wider text-stone-600 font-mono">
             HEPA Purifier
-          </label>
-          <div className="mt-1.5 grid grid-cols-2 gap-1 p-0.5 bg-stone-100 rounded-lg border border-stone-200/80">
+          </span>
+          <div
+            className="mt-1.5 grid grid-cols-2 gap-1 p-0.5 bg-stone-100 rounded-lg border border-stone-200/80"
+            role="group"
+            aria-label="HEPA air purifier availability"
+          >
             <button
               type="button"
               onClick={() => onUpdatePurifier(true)}
-              className={`py-1 text-center rounded text-xs transition ${
+              aria-pressed={hasAirPurifier}
+              className={`py-1 text-center rounded text-xs transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 ${
                 hasAirPurifier
                   ? "bg-white text-stone-950 font-semibold shadow-2xs"
-                  : "text-stone-600 hover:text-stone-950"
+                  : "text-stone-700 hover:text-stone-950"
               }`}
             >
               Yes
@@ -117,10 +124,11 @@ export function HousingSelector({
             <button
               type="button"
               onClick={() => onUpdatePurifier(false)}
-              className={`py-1 text-center rounded text-xs transition ${
+              aria-pressed={!hasAirPurifier}
+              className={`py-1 text-center rounded text-xs transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 ${
                 !hasAirPurifier
                   ? "bg-white text-stone-950 font-semibold shadow-2xs"
-                  : "text-stone-600 hover:text-stone-950"
+                  : "text-stone-700 hover:text-stone-950"
               }`}
             >
               No (DIY)
@@ -129,10 +137,14 @@ export function HousingSelector({
         </div>
 
         <div>
-          <label className="text-[10px] font-medium uppercase tracking-wider text-stone-500 font-mono">
+          <span className="text-[10px] font-medium uppercase tracking-wider text-stone-600 font-mono">
             Cooking Fuel
-          </label>
-          <div className="mt-1.5 grid grid-cols-3 gap-1 p-0.5 bg-stone-100 rounded-lg border border-stone-200/80">
+          </span>
+          <div
+            className="mt-1.5 grid grid-cols-3 gap-1 p-0.5 bg-stone-100 rounded-lg border border-stone-200/80"
+            role="group"
+            aria-label="Primary cooking fuel"
+          >
             {FUEL_OPTIONS.map((f) => {
               const selected = cookingFuel === f.id;
               return (
@@ -140,10 +152,12 @@ export function HousingSelector({
                   key={f.id}
                   type="button"
                   onClick={() => onUpdateFuel(f.id)}
-                  className={`py-1 text-center rounded text-[10px] transition truncate ${
+                  aria-pressed={selected}
+                  aria-label={f.label}
+                  className={`py-1 text-center rounded text-[10px] transition truncate focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 ${
                     selected
                       ? "bg-white text-stone-950 font-semibold shadow-2xs"
-                      : "text-stone-600 hover:text-stone-950"
+                      : "text-stone-700 hover:text-stone-950"
                   }`}
                   title={f.label}
                 >

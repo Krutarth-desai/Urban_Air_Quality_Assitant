@@ -137,15 +137,18 @@ export function ProfileForm({
   };
 
   return (
-    <div className="rounded-xl border border-stone-200/90 bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04)] space-y-5">
+    <div
+      className="rounded-xl border border-stone-200/90 bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04)] space-y-5"
+      aria-busy={loading}
+    >
       {/* Header */}
       <div className="flex items-center gap-2 pb-3 border-b border-stone-100">
-        <SlidersHorizontal className="h-4 w-4 text-stone-800" />
+        <SlidersHorizontal className="h-4 w-4 text-stone-800" aria-hidden="true" />
         <div>
-          <h3 className="text-sm font-semibold tracking-tight text-stone-950">
+          <h2 className="text-sm font-semibold tracking-tight text-stone-950">
             Household Parameters
-          </h3>
-          <p className="text-[11px] text-stone-500">
+          </h2>
+          <p className="text-[11px] text-stone-600">
             Calibrate particulate mitigation to resident vulnerability.
           </p>
         </div>
@@ -181,16 +184,17 @@ export function ProfileForm({
           type="button"
           onClick={handleGenerateClick}
           disabled={loading}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#164E3B] px-4 py-2.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-[#113D2E] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+          aria-busy={loading}
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#164E3B] px-4 py-2.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-[#113D2E] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
               <span>Calibrating Forecast...</span>
             </>
           ) : (
             <>
-              <SlidersHorizontal className="h-3.5 w-3.5" />
+              <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
               <span>Update Routine & Forecast</span>
             </>
           )}

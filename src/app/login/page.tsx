@@ -42,38 +42,50 @@ export default function LoginPage() {
         {/* Header Icon & Title */}
         <div className="text-center space-y-1.5">
           <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg bg-[#164E3B] text-white">
-            <Wind className="h-5 w-5" />
+            <Wind className="h-5 w-5" aria-hidden="true" />
           </div>
           <h1 className="text-xl font-bold tracking-tight text-stone-950 sm:text-2xl">
             {mode === "signin" ? "Sign in to SmogShield" : "Create Account"}
           </h1>
-          <p className="text-xs text-stone-500 max-w-xs mx-auto">
+          <p className="text-xs text-stone-600 max-w-xs mx-auto">
             Synchronize household profile parameters and cloud-save tailored mitigation plans.
           </p>
         </div>
 
         {/* Card */}
         <div className="w-full rounded-xl border border-stone-200/90 bg-white p-7 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
-          {/* Segmented Flat Toggle */}
-          <div className="mb-6 grid grid-cols-2 rounded-lg bg-stone-100 p-1 border border-stone-200/80">
+          {/* Segmented Flat Toggle with Tablist Role */}
+          <div
+            role="tablist"
+            aria-label="Account Action Selection"
+            className="mb-6 grid grid-cols-2 rounded-lg bg-stone-100 p-1 border border-stone-200/80"
+          >
             <button
               type="button"
+              role="tab"
+              id="tab-signin"
+              aria-selected={mode === "signin"}
+              aria-controls="auth-form"
               onClick={() => setMode("signin")}
-              className={`rounded-md py-1.5 text-xs font-semibold transition ${
+              className={`rounded-md py-1.5 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 ${
                 mode === "signin"
                   ? "bg-white text-stone-950 shadow-2xs"
-                  : "text-stone-500 hover:text-stone-900"
+                  : "text-stone-600 hover:text-stone-900"
               }`}
             >
               Sign In
             </button>
             <button
               type="button"
+              role="tab"
+              id="tab-signup"
+              aria-selected={mode === "signup"}
+              aria-controls="auth-form"
               onClick={() => setMode("signup")}
-              className={`rounded-md py-1.5 text-xs font-semibold transition ${
+              className={`rounded-md py-1.5 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 ${
                 mode === "signup"
                   ? "bg-white text-stone-950 shadow-2xs"
-                  : "text-stone-500 hover:text-stone-900"
+                  : "text-stone-600 hover:text-stone-900"
               }`}
             >
               Create Account
@@ -87,7 +99,7 @@ export default function LoginPage() {
               aria-live="polite"
               className="mb-5 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-800"
             >
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-700" />
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-700" aria-hidden="true" />
               <div className="leading-relaxed">{state.error}</div>
             </div>
           )}
@@ -99,24 +111,29 @@ export default function LoginPage() {
               aria-live="polite"
               className="mb-5 flex items-start gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900"
             >
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" aria-hidden="true" />
               <div className="leading-relaxed">{state.success}</div>
             </div>
           )}
 
           {/* Auth Form */}
-          <form action={formAction} className="space-y-4">
+          <form
+            id="auth-form"
+            action={formAction}
+            aria-busy={isPending}
+            className="space-y-4"
+          >
             <input type="hidden" name="auth_mode" value={mode} />
 
             <div>
               <label
                 htmlFor="email"
-                className="block text-[11px] font-medium uppercase tracking-wider text-stone-500 font-mono"
+                className="block text-[11px] font-medium uppercase tracking-wider text-stone-700 font-mono"
               >
                 Email Address
               </label>
               <div className="relative mt-1">
-                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" aria-hidden="true" />
                 <input
                   id="email"
                   name="email"
@@ -124,7 +141,7 @@ export default function LoginPage() {
                   autoComplete="email"
                   required
                   placeholder="name@example.com"
-                  className="w-full rounded-lg border border-stone-300 bg-stone-50/50 py-2 pl-9 pr-3 text-sm text-stone-950 placeholder:text-stone-400 focus:bg-white focus:border-stone-900 focus:outline-none transition"
+                  className="w-full rounded-lg border border-stone-300 bg-stone-50/50 py-2 pl-9 pr-3 text-sm text-stone-950 placeholder:text-stone-500 focus:bg-white focus:border-stone-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 transition"
                 />
               </div>
             </div>
@@ -132,12 +149,12 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-[11px] font-medium uppercase tracking-wider text-stone-500 font-mono"
+                className="block text-[11px] font-medium uppercase tracking-wider text-stone-700 font-mono"
               >
                 Password
               </label>
               <div className="relative mt-1">
-                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" aria-hidden="true" />
                 <input
                   id="password"
                   name="password"
@@ -148,10 +165,10 @@ export default function LoginPage() {
                   required
                   minLength={6}
                   placeholder="••••••••"
-                  className="w-full rounded-lg border border-stone-300 bg-stone-50/50 py-2 pl-9 pr-3 text-sm text-stone-950 placeholder:text-stone-400 focus:bg-white focus:border-stone-900 focus:outline-none transition"
+                  className="w-full rounded-lg border border-stone-300 bg-stone-50/50 py-2 pl-9 pr-3 text-sm text-stone-950 placeholder:text-stone-500 focus:bg-white focus:border-stone-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 transition"
                 />
               </div>
-              <p className="mt-1 text-[11px] text-stone-400">
+              <p className="mt-1 text-[11px] text-stone-600">
                 Minimum 6 characters required.
               </p>
             </div>
@@ -159,11 +176,12 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isPending}
-              className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-[#164E3B] px-4 py-2.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-[#113D2E] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+              aria-busy={isPending}
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-[#164E3B] px-4 py-2.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-[#113D2E] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900"
             >
               {isPending ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                   <span>Processing...</span>
                 </>
               ) : (
@@ -173,7 +191,7 @@ export default function LoginPage() {
                       ? "Sign In to Account"
                       : "Create Free Account"}
                   </span>
-                  <ArrowRight className="h-3.5 w-3.5" />
+                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
                 </>
               )}
             </button>
@@ -183,7 +201,7 @@ export default function LoginPage() {
           <div className="mt-6 border-t border-stone-100 pt-4 text-center">
             <Link
               href="/"
-              className="text-xs font-medium text-stone-500 hover:text-stone-900 transition"
+              className="text-xs font-medium text-stone-600 hover:text-stone-900 transition rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900"
             >
               Continue without an account →
             </Link>

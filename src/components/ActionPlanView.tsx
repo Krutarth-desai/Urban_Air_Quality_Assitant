@@ -181,10 +181,10 @@ export function ActionPlanView({
       <div className="flex flex-col gap-3 pb-5 border-b border-stone-200/80 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-lg font-bold tracking-tight text-stone-950">
+            <h2 className="text-lg font-bold tracking-tight text-stone-950">
               Personalized Smog Action Plan
-            </h3>
-            <span className="font-mono text-[10px] uppercase text-stone-500 bg-stone-100 border border-stone-200 px-2 py-0.5 rounded">
+            </h2>
+            <span className="font-mono text-[10px] uppercase text-stone-600 bg-stone-100 border border-stone-200 px-2 py-0.5 rounded">
               {source === "gemini" ? "Calibrated Model" : "Deterministic Engine"}
             </span>
           </div>
@@ -196,15 +196,15 @@ export function ActionPlanView({
         <div className="flex shrink-0 items-center gap-2">
           {savedSuccess ? (
             <div className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-900 shadow-2xs">
-              <Check className="h-3.5 w-3.5 text-emerald-700" />
+              <Check className="h-3.5 w-3.5 text-emerald-700" aria-hidden="true" />
               <span>Saved to Account</span>
             </div>
           ) : authPrompt ? (
             <Link
               href="/login"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-900 shadow-2xs transition hover:bg-amber-100"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-900 shadow-2xs transition hover:bg-amber-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-800"
             >
-              <LogIn className="h-3.5 w-3.5 text-amber-800" />
+              <LogIn className="h-3.5 w-3.5 text-amber-800" aria-hidden="true" />
               <span>Sign in to save →</span>
             </Link>
           ) : (
@@ -212,16 +212,16 @@ export function ActionPlanView({
               type="button"
               onClick={handleSavePlan}
               disabled={saving}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-xs font-medium text-stone-800 shadow-2xs transition hover:bg-stone-50 active:scale-95 disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-xs font-medium text-stone-800 shadow-2xs transition hover:bg-stone-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 active:scale-95 disabled:opacity-60"
             >
               {saving ? (
                 <>
-                  <Loader2 className="h-3.5 w-3.5 animate-spin text-stone-600" />
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-stone-600" aria-hidden="true" />
                   <span>Saving...</span>
                 </>
               ) : (
                 <>
-                  <Bookmark className="h-3.5 w-3.5 text-stone-500" />
+                  <Bookmark className="h-3.5 w-3.5 text-stone-600" aria-hidden="true" />
                   <span>Save Plan</span>
                 </>
               )}
@@ -232,7 +232,7 @@ export function ActionPlanView({
 
       {/* Microclimate Inversion Insight */}
       <div className="flex items-start gap-2.5 rounded-lg border border-stone-200 bg-stone-50/70 p-3 text-xs leading-relaxed text-stone-700">
-        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-stone-600" />
+        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-stone-600" aria-hidden="true" />
         <div>
           <strong className="font-semibold text-stone-900">
             Winter Inversion Dynamic:{" "}
@@ -251,66 +251,92 @@ export function ActionPlanView({
       />
 
       {/* 3. 4 Core Pillars Navigation Tabs */}
-      <div className="flex flex-wrap border-b border-stone-200 gap-2 sm:gap-6">
+      <div
+        role="tablist"
+        aria-label="Action plan category pillars"
+        className="flex flex-wrap border-b border-stone-200 gap-2 sm:gap-6"
+      >
         <button
           type="button"
+          id="tab-routines"
+          role="tab"
+          aria-selected={activeTab === "routines"}
+          aria-controls="tabpanel-plan"
           onClick={() => setActiveTab("routines")}
-          className={`pb-2.5 text-xs font-semibold transition border-b-2 -mb-px flex items-center gap-1.5 ${
+          className={`pb-2.5 text-xs font-semibold transition border-b-2 -mb-px flex items-center gap-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 ${
             activeTab === "routines"
               ? "border-stone-900 text-stone-950"
-              : "border-transparent text-stone-500 hover:text-stone-800"
+              : "border-transparent text-stone-600 hover:text-stone-900"
           }`}
         >
-          <Calendar className="h-3.5 w-3.5" />
+          <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
           <span>Low-Emission Routines ({plan.dailyRoutines.length})</span>
         </button>
 
         <button
           type="button"
+          id="tab-indoor"
+          role="tab"
+          aria-selected={activeTab === "indoor"}
+          aria-controls="tabpanel-plan"
           onClick={() => setActiveTab("indoor")}
-          className={`pb-2.5 text-xs font-semibold transition border-b-2 -mb-px flex items-center gap-1.5 ${
+          className={`pb-2.5 text-xs font-semibold transition border-b-2 -mb-px flex items-center gap-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 ${
             activeTab === "indoor"
               ? "border-stone-900 text-stone-950"
-              : "border-transparent text-stone-500 hover:text-stone-800"
+              : "border-transparent text-stone-600 hover:text-stone-900"
           }`}
         >
-          <Shield className="h-3.5 w-3.5" />
+          <Shield className="h-3.5 w-3.5" aria-hidden="true" />
           <span>Indoor IAQ Hacks ({plan.indoorHacks.length})</span>
         </button>
 
         <button
           type="button"
+          id="tab-alternatives"
+          role="tab"
+          aria-selected={activeTab === "alternatives"}
+          aria-controls="tabpanel-plan"
           onClick={() => setActiveTab("alternatives")}
-          className={`pb-2.5 text-xs font-semibold transition border-b-2 -mb-px flex items-center gap-1.5 ${
+          className={`pb-2.5 text-xs font-semibold transition border-b-2 -mb-px flex items-center gap-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 ${
             activeTab === "alternatives"
               ? "border-stone-900 text-stone-950"
-              : "border-transparent text-stone-500 hover:text-stone-800"
+              : "border-transparent text-stone-600 hover:text-stone-900"
           }`}
         >
-          <Leaf className="h-3.5 w-3.5" />
+          <Leaf className="h-3.5 w-3.5" aria-hidden="true" />
           <span>Sustainable Alternatives ({plan.sustainableAlternatives.length})</span>
         </button>
 
         <button
           type="button"
+          id="tab-community"
+          role="tab"
+          aria-selected={activeTab === "community"}
+          aria-controls="tabpanel-plan"
           onClick={() => setActiveTab("community")}
-          className={`pb-2.5 text-xs font-semibold transition border-b-2 -mb-px flex items-center gap-1.5 ${
+          className={`pb-2.5 text-xs font-semibold transition border-b-2 -mb-px flex items-center gap-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 ${
             activeTab === "community"
               ? "border-stone-900 text-stone-950"
-              : "border-transparent text-stone-500 hover:text-stone-800"
+              : "border-transparent text-stone-600 hover:text-stone-900"
           }`}
         >
-          <Users className="h-3.5 w-3.5" />
+          <Users className="h-3.5 w-3.5" aria-hidden="true" />
           <span>Community Impact ({communityActions.length})</span>
         </button>
       </div>
 
       {/* 4. Action Checklist with Direct Impact Breakdown */}
-      <RoutineChecklist
-        items={currentTabItems}
-        committedIds={committedIds}
-        onToggleCommit={toggleCommit}
-      />
+      <div
+        id="tabpanel-plan"
+        role="tabpanel"
+        aria-labelledby={`tab-${activeTab}`}
+      >
+        <RoutineChecklist
+          items={currentTabItems}
+          committedIds={committedIds}
+          onToggleCommit={toggleCommit}
+        />
+      </div>
 
       {/* 5. Community Advisory & Collective Sharing */}
       <CommunityShareCard

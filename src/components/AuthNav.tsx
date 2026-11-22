@@ -26,22 +26,22 @@ export async function AuthNav() {
       <div className="flex items-center gap-3 text-xs">
         <Link
           href="/saved"
-          className="font-medium text-stone-600 hover:text-stone-950 transition"
+          className="font-medium text-stone-700 hover:text-stone-950 transition rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900"
         >
           Saved Plans
         </Link>
 
-        <span className="hidden font-mono text-stone-500 sm:inline max-w-[140px] truncate">
+        <span className="hidden font-mono text-stone-600 sm:inline max-w-[140px] truncate">
           {user.email}
         </span>
 
         <form action={signout}>
           <button
             type="submit"
-            className="inline-flex items-center gap-1 rounded-md border border-stone-200 bg-white px-2.5 py-1 font-medium text-stone-700 shadow-xs hover:bg-stone-50 hover:text-stone-950 transition"
-            aria-label="Sign out"
+            className="inline-flex items-center gap-1 rounded-md border border-stone-200 bg-white px-2.5 py-1 font-medium text-stone-700 shadow-xs hover:bg-stone-50 hover:text-stone-950 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900"
+            aria-label="Sign out of account"
           >
-            <LogOut className="h-3 w-3" />
+            <LogOut className="h-3 w-3" aria-hidden="true" />
             <span>Sign Out</span>
           </button>
         </form>
@@ -52,7 +52,7 @@ export async function AuthNav() {
   return (
     <Link
       href="/login"
-      className="inline-flex items-center rounded-md border border-stone-300 bg-white px-3 py-1.5 text-xs font-medium text-stone-900 shadow-xs hover:border-stone-400 hover:bg-stone-50 transition"
+      className="inline-flex items-center rounded-md border border-stone-300 bg-white px-3 py-1.5 text-xs font-medium text-stone-900 shadow-xs hover:border-stone-400 hover:bg-stone-50 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900"
     >
       Sign In
     </Link>

@@ -220,7 +220,7 @@ export default function Home() {
       <HomeHero />
 
       {/* Main Workspace (12 cols) */}
-      <main className="mx-auto max-w-6xl flex-1 px-4 py-6 sm:px-6 space-y-6">
+      <div className="mx-auto max-w-6xl flex-1 px-4 py-6 sm:px-6 space-y-6">
         {/* Row 1: Full-width Air Quality Telemetry Bar */}
         <section aria-label="Live Air Quality Telemetry Bar">
           <AqiDashboard
@@ -246,8 +246,11 @@ export default function Home() {
             </section>
 
             {planError && (
-              <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-800">
-                <AlertTriangle className="h-4 w-4 shrink-0 text-red-700" />
+              <div
+                role="alert"
+                className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-800"
+              >
+                <AlertTriangle className="h-4 w-4 shrink-0 text-red-700" aria-hidden="true" />
                 <span>{planError}</span>
               </div>
             )}
@@ -272,18 +275,18 @@ export default function Home() {
               </div>
             ) : (
               <div className="rounded-xl border border-dashed border-stone-300 bg-white p-8 text-center shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
-                <SlidersHorizontal className="mx-auto h-8 w-8 text-stone-400" />
-                <h3 className="mt-3 text-sm font-semibold text-stone-900">
+                <SlidersHorizontal className="mx-auto h-8 w-8 text-stone-400" aria-hidden="true" />
+                <h2 className="mt-3 text-sm font-semibold text-stone-900">
                   Ready to Calibrate Your Mitigation Plan
-                </h3>
-                <p className="mt-1 text-xs text-stone-500 max-w-md mx-auto leading-relaxed">
+                </h2>
+                <p className="mt-1 text-xs text-stone-600 max-w-md mx-auto leading-relaxed">
                   Select your household profile parameters on the left and click &ldquo;Update Routine & Forecast&rdquo; to compute your evidence-informed schedule, indoor containment steps, and emission reductions.
                 </p>
                 <button
                   type="button"
                   onClick={handleGeneratePlan}
                   disabled={loadingPlan || !aqiReport}
-                  className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#164E3B] px-4 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-[#113D2E] transition disabled:opacity-50"
+                  className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#164E3B] px-4 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-[#113D2E] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 transition disabled:opacity-50"
                 >
                   Generate Plan Now
                 </button>
@@ -301,7 +304,7 @@ export default function Home() {
             </section>
           </div>
         </div>
-      </main>
+      </div>
 
       {/* Footer */}
       <HomeFooter />

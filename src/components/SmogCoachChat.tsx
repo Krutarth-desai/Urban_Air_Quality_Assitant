@@ -124,18 +124,22 @@ export function SmogCoachChat({
       {/* Header */}
       <div className="shrink-0 flex items-center justify-between border-b border-stone-200 px-4 py-3 bg-stone-50/70">
         <div className="flex items-center gap-2">
-          <Activity className="h-4 w-4 text-stone-800" />
-          <h4 className="text-xs font-semibold text-stone-900 tracking-tight">
+          <Activity className="h-4 w-4 text-stone-800" aria-hidden="true" />
+          <h2 className="text-xs font-semibold text-stone-900 tracking-tight">
             Environmental Health Consultation
-          </h4>
+          </h2>
         </div>
-        <div className="font-mono text-[11px] text-stone-500">
+        <div className="font-mono text-[11px] text-stone-600">
           Telemetry: {city} • AQI {usAqi}
         </div>
       </div>
 
       {/* Message List */}
-      <div className="flex-1 max-h-[420px] overflow-y-auto p-4 space-y-3">
+      <div
+        className="flex-1 max-h-[420px] overflow-y-auto p-4 space-y-3"
+        aria-live="polite"
+        aria-relevant="additions"
+      >
         {allMessages.map((m) => {
           const isUser = m.role === "user";
           return (
@@ -152,7 +156,11 @@ export function SmogCoachChat({
                     : "bg-stone-100 text-stone-700 border border-stone-200"
                 }`}
               >
-                {isUser ? <User className="h-3 w-3" /> : <Shield className="h-3 w-3" />}
+                {isUser ? (
+                  <User className="h-3 w-3" aria-hidden="true" />
+                ) : (
+                  <Shield className="h-3 w-3" aria-hidden="true" />
+                )}
               </div>
 
               <div
@@ -166,7 +174,7 @@ export function SmogCoachChat({
                 {m.timestamp && (
                   <div
                     className={`mt-1 font-mono text-[10px] ${
-                      isUser ? "text-stone-400 text-right" : "text-stone-500"
+                      isUser ? "text-stone-300 text-right" : "text-stone-600"
                     }`}
                   >
                     {m.timestamp}
@@ -178,15 +186,18 @@ export function SmogCoachChat({
         })}
 
         {loading && (
-          <div className="flex items-center gap-2 text-stone-500 text-xs pl-2">
-            <Loader2 className="h-3.5 w-3.5 animate-spin text-stone-700" />
+          <div className="flex items-center gap-2 text-stone-600 text-xs pl-2">
+            <Loader2 className="h-3.5 w-3.5 animate-spin text-stone-700" aria-hidden="true" />
             <span>Consulting atmospheric exposure guidelines...</span>
           </div>
         )}
 
         {error && (
-          <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-2 text-xs text-red-800">
-            <AlertCircle className="h-4 w-4 shrink-0 text-red-700" />
+          <div
+            role="alert"
+            className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-2 text-xs text-red-800"
+          >
+            <AlertCircle className="h-4 w-4 shrink-0 text-red-700" aria-hidden="true" />
             <span>{error}</span>
           </div>
         )}
@@ -196,8 +207,8 @@ export function SmogCoachChat({
 
       {/* Starter Suggestions with clean flex-wrap */}
       <div className="shrink-0 border-t border-stone-200 bg-stone-50/50 px-3.5 py-2.5">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="font-mono text-[10px] uppercase text-stone-500 shrink-0 mr-1">
+        <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Suggested consultation questions">
+          <span className="font-mono text-[10px] uppercase text-stone-600 shrink-0 mr-1">
             Questions:
           </span>
           {STARTER_PROMPTS.map((prompt) => (
@@ -206,7 +217,7 @@ export function SmogCoachChat({
               type="button"
               onClick={() => handleSend(prompt)}
               disabled={loading}
-              className="rounded border border-stone-200 bg-white px-2.5 py-1 text-xs text-stone-700 transition hover:bg-stone-100 hover:text-stone-950 disabled:opacity-50 text-left font-medium shadow-2xs"
+              className="rounded border border-stone-200 bg-white px-2.5 py-1 text-xs text-stone-700 transition hover:bg-stone-100 hover:text-stone-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 disabled:opacity-50 text-left font-medium shadow-2xs"
             >
               {prompt}
             </button>
@@ -224,15 +235,19 @@ export function SmogCoachChat({
       >
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
+            <label htmlFor="coach-input" className="sr-only">
+              Consultation query regarding ventilation, mask fit, or indoor filtration
+            </label>
             <input
+              id="coach-input"
               type="text"
               value={input}
               maxLength={500}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask regarding ventilation times, mask fit, or indoor filtration..."
-              className="w-full rounded-lg border border-stone-300 bg-stone-50/50 px-3 py-2 text-xs text-stone-900 placeholder:text-stone-400 focus:bg-white focus:border-stone-900 focus:outline-none transition sm:text-sm"
+              className="w-full rounded-lg border border-stone-300 bg-stone-50/50 px-3 py-2 text-xs text-stone-900 placeholder:text-stone-500 focus:bg-white focus:border-stone-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 transition sm:text-sm"
             />
-            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 font-mono text-[10px] text-stone-400">
+            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 font-mono text-[10px] text-stone-500" aria-hidden="true">
               {input.length}/500
             </span>
           </div>
@@ -240,13 +255,13 @@ export function SmogCoachChat({
           <button
             type="submit"
             disabled={!input.trim() || loading}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#164E3B] text-white transition hover:bg-[#113D2E] disabled:opacity-40"
-            aria-label="Send message"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#164E3B] text-white transition hover:bg-[#113D2E] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 disabled:opacity-40"
+            aria-label="Send consultation query"
           >
             {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
             ) : (
-              <Send className="h-3.5 w-3.5" />
+              <Send className="h-3.5 w-3.5" aria-hidden="true" />
             )}
           </button>
         </div>

@@ -23,19 +23,23 @@ export function ForecastStrip({ forecast }: ForecastStripProps) {
   return (
     <div className="mt-5 pt-4 border-t border-stone-100">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-stone-500 font-mono">
-          <Clock className="h-3.5 w-3.5 text-stone-400" />
+        <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-stone-600 font-mono">
+          <Clock className="h-3.5 w-3.5 text-stone-500" aria-hidden="true" />
           <span>24-Hour PM2.5 Forecast Telemetry (µg/m³)</span>
         </div>
         {hoveredIdx !== null && displayPoints[hoveredIdx] && (
-          <div className="font-mono text-xs font-semibold tabular-nums text-stone-900">
+          <div className="font-mono text-xs font-semibold tabular-nums text-stone-900" aria-live="polite">
             {displayPoints[hoveredIdx].hourLabel}: {displayPoints[hoveredIdx].pm25} µg/m³ (AQI{" "}
             {displayPoints[hoveredIdx].usAqi})
           </div>
         )}
       </div>
 
-      <div className="mt-3 flex h-20 items-end gap-1 sm:gap-1.5">
+      <div
+        className="mt-3 flex h-20 items-end gap-1 sm:gap-1.5"
+        role="img"
+        aria-label="24-hour PM2.5 hourly forecast bar graph"
+      >
         {displayPoints.map((pt, idx) => {
           const heightPct = Math.max(
             Math.round((pt.pm25 / maxForecastPm25) * 100),
@@ -66,7 +70,7 @@ export function ForecastStrip({ forecast }: ForecastStripProps) {
         })}
       </div>
 
-      <div className="mt-1.5 flex justify-between text-[10px] font-mono text-stone-400">
+      <div className="mt-1.5 flex justify-between text-[10px] font-mono text-stone-600">
         <span>00:00</span>
         <span>06:00</span>
         <span>12:00</span>

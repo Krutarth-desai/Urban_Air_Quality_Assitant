@@ -6,10 +6,10 @@ import { Wind } from "lucide-react";
  */
 export function HomeHero() {
   return (
-    <section className="border-b border-stone-200/90 bg-white px-4 py-8 sm:px-6">
+    <section aria-label="Console Overview & Objective" className="border-b border-stone-200/90 bg-white px-4 py-8 sm:px-6">
       <div className="mx-auto max-w-6xl">
-        <div className="inline-flex items-center gap-2 rounded border border-stone-200 bg-stone-50 px-2.5 py-0.5 font-mono text-[11px] font-medium uppercase tracking-wider text-stone-600">
-          <Wind className="h-3 w-3 text-stone-700" />
+        <div className="inline-flex items-center gap-2 rounded border border-stone-200 bg-stone-50 px-2.5 py-0.5 font-mono text-[11px] font-medium uppercase tracking-wider text-stone-700">
+          <Wind className="h-3 w-3 text-stone-700" aria-hidden="true" />
           <span>Atmospheric Health Console • Winter Inversion Edition</span>
         </div>
         <h1 className="mt-3 text-2xl font-bold tracking-tight text-stone-950 sm:text-3xl md:text-4xl">

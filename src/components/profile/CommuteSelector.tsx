@@ -30,10 +30,14 @@ export function CommuteSelector({
 }: CommuteSelectorProps) {
   return (
     <div>
-      <label className="text-[11px] font-medium uppercase tracking-wider text-stone-500 font-mono">
+      <span className="text-[11px] font-medium uppercase tracking-wider text-stone-600 font-mono">
         2. Primary Commute
-      </label>
-      <div className="mt-2 grid grid-cols-5 gap-1 p-1 bg-stone-100 rounded-lg border border-stone-200/80">
+      </span>
+      <div
+        className="mt-2 grid grid-cols-5 gap-1 p-1 bg-stone-100 rounded-lg border border-stone-200/80"
+        role="group"
+        aria-label="Primary commute mode"
+      >
         {COMMUTE_OPTIONS.map((mode) => {
           const selected = selectedCommute === mode.id;
           const Icon = mode.icon;
@@ -42,14 +46,16 @@ export function CommuteSelector({
               key={mode.id}
               type="button"
               onClick={() => onSelect(mode.id)}
-              className={`flex flex-col items-center justify-center gap-1 py-1.5 rounded-md text-center transition ${
+              aria-pressed={selected}
+              aria-label={mode.label}
+              className={`flex flex-col items-center justify-center gap-1 py-1.5 rounded-md text-center transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 ${
                 selected
                   ? "bg-white text-stone-950 shadow-2xs font-semibold border border-stone-200/60"
-                  : "text-stone-600 hover:text-stone-950"
+                  : "text-stone-700 hover:text-stone-950"
               }`}
               title={mode.label}
             >
-              <Icon className="h-3.5 w-3.5" />
+              <Icon className="h-3.5 w-3.5" aria-hidden="true" />
               <span className="text-[10px] truncate max-w-full">
                 {mode.label}
               </span>
