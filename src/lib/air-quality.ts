@@ -28,7 +28,7 @@ export interface AirQualityReport {
     | "Unhealthy"
     | "Very Unhealthy"
     | "Hazardous";
-  colorToken: "emerald" | "amber" | "orange" | "red" | "purple" | "rose";
+  colorToken: "emerald" | "amber" | "orange" | "red" | "severe" | "hazardous";
   safestWindow: string;
   peakSmogWindow: string;
   hourlyForecast: HourlyPoint[];
@@ -47,8 +47,8 @@ export function classifyUsAqi(aqi: number): {
       colorToken: "orange",
     };
   if (aqi <= 200) return { category: "Unhealthy", colorToken: "red" };
-  if (aqi <= 300) return { category: "Very Unhealthy", colorToken: "purple" };
-  return { category: "Hazardous", colorToken: "rose" };
+  if (aqi <= 300) return { category: "Very Unhealthy", colorToken: "severe" };
+  return { category: "Hazardous", colorToken: "hazardous" };
 }
 
 export async function searchCities(query: string): Promise<CityLocation[]> {

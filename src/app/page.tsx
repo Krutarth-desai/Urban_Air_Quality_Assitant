@@ -2,13 +2,11 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
-  Shield,
   Wind,
-  Sparkles,
   Info,
   AlertTriangle,
-  Heart,
   Globe,
+  SlidersHorizontal,
 } from "lucide-react";
 import { AqiDashboard } from "@/components/AqiDashboard";
 import { ProfileForm } from "@/components/ProfileForm";
@@ -119,15 +117,15 @@ export default function Home() {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
         const localCity: CityLocation = {
-          name: "My Local Coordinates",
-          country: "Local Device",
+          name: "Local Telemetry Station",
+          country: "Current Coordinates",
           latitude: lat,
           longitude: lon,
         };
         setSelectedCity(localCity);
         setProfile((prev) => ({
           ...prev,
-          city: "My Location",
+          city: "Local Telemetry Station",
           latitude: lat,
           longitude: lon,
         }));
@@ -145,7 +143,7 @@ export default function Home() {
   // Generate Personalized Smog Plan
   const handleGeneratePlan = async () => {
     if (!aqiReport) {
-      alert("Please wait for air quality data to load before generating a plan.");
+      alert("Please wait for telemetry data to load before generating a plan.");
       return;
     }
 
@@ -213,42 +211,41 @@ export default function Home() {
   }`;
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-950 text-slate-100">
-      {/* Hero Header */}
-      <section className="relative overflow-hidden border-b border-slate-800/60 bg-gradient-to-b from-slate-900/60 to-slate-950 px-4 py-8 sm:px-6 sm:py-12">
-        <div className="mx-auto max-w-4xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-teal-500/10 px-3.5 py-1 text-xs font-semibold text-teal-300">
-            <Wind className="h-3.5 w-3.5" />
-            <span>Protecting Families & Communities During Urban Winter Smog</span>
+    <div className="flex min-h-screen flex-col bg-[#F6F6F3] text-stone-950">
+      {/* Editorial Page Header */}
+      <section className="border-b border-stone-200/90 bg-white px-4 py-8 sm:px-6">
+        <div className="mx-auto max-w-6xl">
+          <div className="inline-flex items-center gap-2 rounded border border-stone-200 bg-stone-50 px-2.5 py-0.5 font-mono text-[11px] font-medium uppercase tracking-wider text-stone-600">
+            <Wind className="h-3 w-3 text-stone-700" />
+            <span>Atmospheric Health Console • Winter Inversion Edition</span>
           </div>
-          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl">
-            Smarter Smog Routines. Clean Indoor Air.{" "}
-            <span className="bg-gradient-to-r from-teal-400 via-emerald-400 to-teal-300 bg-clip-text text-transparent">
-              Zero Guesswork.
-            </span>
+          <h1 className="mt-3 text-2xl font-bold tracking-tight text-stone-950 sm:text-3xl md:text-4xl">
+            Calibrated Particulate Mitigation & Exposure Timing
           </h1>
-          <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-300 sm:text-base leading-relaxed">
-            Time your ventilation to real hourly PM2.5 forecasts, safeguard infants & vulnerable lungs with budget-friendly indoor hacks, and discover high-impact sustainable choices with transparent health and emissions metrics.
+          <p className="mt-2 max-w-3xl text-xs text-stone-600 sm:text-sm leading-relaxed">
+            Time household ventilation to real hourly PM2.5 forecasts, safeguard developing or reactive airways with low-cost indoor containment, and discover measurable emission-reduction routines.
           </p>
         </div>
       </section>
 
-      {/* Main Grid Content */}
-      <main className="mx-auto max-w-7xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-          {/* Left Column: AQI Dashboard + Household Profile (7 cols) */}
-          <div className="space-y-8 lg:col-span-7">
-            <section aria-label="Live Air Quality Dashboard">
-              <AqiDashboard
-                cityName={selectedCity.name}
-                report={aqiReport}
-                loading={loadingAqi}
-                onSelectCity={handleSelectCity}
-                onUseMyLocation={handleUseMyLocation}
-              />
-            </section>
+      {/* Main Workspace (12 cols) */}
+      <main className="mx-auto max-w-6xl flex-1 px-4 py-6 sm:px-6 space-y-6">
+        {/* Row 1: Full-width Air Quality Telemetry Bar */}
+        <section aria-label="Live Air Quality Telemetry Bar">
+          <AqiDashboard
+            cityName={selectedCity.name}
+            report={aqiReport}
+            loading={loadingAqi}
+            onSelectCity={handleSelectCity}
+            onUseMyLocation={handleUseMyLocation}
+          />
+        </section>
 
-            <section aria-label="Household Profile Configuration">
+        {/* Row 2: 2-Column Asymmetric Workspace (4 cols settings, 8 cols plan) */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
+          {/* Left Column: Sticky Profile Parameters (4 cols) */}
+          <div className="lg:col-span-4 sticky top-18 space-y-4">
+            <section aria-label="Household Configuration">
               <ProfileForm
                 profile={profile}
                 onChange={setProfile}
@@ -258,94 +255,97 @@ export default function Home() {
             </section>
 
             {planError && (
-              <div className="flex items-center gap-2.5 rounded-xl border border-rose-500/30 bg-rose-950/20 p-4 text-sm text-rose-300">
-                <AlertTriangle className="h-5 w-5 shrink-0 text-rose-400" />
+              <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-800">
+                <AlertTriangle className="h-4 w-4 shrink-0 text-red-700" />
                 <span>{planError}</span>
               </div>
             )}
+
+            {/* Scientific Inversion Principle Card */}
+            <div className="rounded-xl border border-stone-200 bg-white p-4 text-xs text-stone-600 leading-relaxed shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+              <div className="flex items-center gap-1.5 font-semibold text-stone-900 mb-1.5">
+                <Info className="h-4 w-4 text-stone-700" />
+                <span>Thermal Inversion Dynamics</span>
+              </div>
+              <p>
+                During cold winter nights, nocturnal radiative surface cooling traps fine aerosols (PM2.5) within a shallow atmospheric boundary layer below 100 meters. SmogShield pinpoints the solar heating breakthrough window to safely schedule indoor air exchanges.
+              </p>
+            </div>
           </div>
 
-          {/* Right Column: Smog Coach GenAI Chat (5 cols) */}
-          <div className="lg:col-span-5">
-            <div className="sticky top-20 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-teal-400" />
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300">
-                    Live Smog Advisory AI
-                  </h3>
-                </div>
-                <span className="text-xs text-slate-400">Contextual Coach</span>
+          {/* Right Column: Action Plan View or Placeholder (8 cols) */}
+          <div className="lg:col-span-8 space-y-6">
+            {plan ? (
+              <div ref={planSectionRef}>
+                <ActionPlanView
+                  plan={plan}
+                  cityName={selectedCity.name}
+                  usAqi={aqiReport ? aqiReport.usAqi : 150}
+                  safestWindow={
+                    aqiReport?.safestWindow ?? "14:00 - 16:00"
+                  }
+                  source={planSource}
+                />
               </div>
+            ) : (
+              <div className="rounded-xl border border-dashed border-stone-300 bg-white p-8 text-center shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+                <SlidersHorizontal className="mx-auto h-8 w-8 text-stone-400" />
+                <h3 className="mt-3 text-sm font-semibold text-stone-900">
+                  Ready to Calibrate Your Mitigation Plan
+                </h3>
+                <p className="mt-1 text-xs text-stone-500 max-w-md mx-auto leading-relaxed">
+                  Select your household profile parameters on the left and click &ldquo;Update Routine & Forecast&rdquo; to compute your evidence-informed schedule, indoor containment steps, and emission reductions.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleGeneratePlan}
+                  disabled={loadingPlan || !aqiReport}
+                  className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#164E3B] px-4 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-[#113D2E] transition disabled:opacity-50"
+                >
+                  Generate Plan Now
+                </button>
+              </div>
+            )}
 
+            {/* Environmental Health Consultation Panel */}
+            <section aria-label="Environmental Health Assistant">
               <SmogCoachChat
                 city={selectedCity.name}
                 usAqi={aqiReport ? aqiReport.usAqi : 120}
                 pm25={aqiReport ? aqiReport.pm25 : 45}
                 householdSummary={householdSummary}
               />
-
-              {/* Quick Science Fact Box */}
-              <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-4 text-xs text-slate-400 leading-relaxed">
-                <div className="flex items-center gap-1.5 font-semibold text-slate-200">
-                  <Info className="h-4 w-4 text-teal-400" />
-                  <span>The Winter Smog Inversion Principle</span>
-                </div>
-                <p className="mt-1.5">
-                  During winter nights, the ground cools faster than the air above it, creating a thermal inversion lid that traps vehicle exhaust and biomass smoke within 100 meters of the ground. SmogShield pinpoints the exact daytime window when solar heating breaks this inversion.
-                </p>
-              </div>
-            </div>
+            </section>
           </div>
         </div>
-
-        {/* Generated Action Plan Section */}
-        {plan && (
-          <div ref={planSectionRef} className="mt-12 pt-8 border-t border-slate-800">
-            <ActionPlanView
-              plan={plan}
-              cityName={selectedCity.name}
-              usAqi={aqiReport ? aqiReport.usAqi : 150}
-              safestWindow={
-                aqiReport?.safestWindow ?? "Mid-afternoon (14:00 - 16:00)"
-              }
-              source={planSource}
-            />
-          </div>
-        )}
       </main>
 
       {/* Footer */}
-      <footer className="mt-16 border-t border-slate-800 bg-slate-950 py-10 text-xs text-slate-400">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-teal-400" />
-                <span className="font-bold text-slate-200">SmogShield</span>
-                <span className="text-slate-500">|</span>
-                <span>Urban Air Quality & Low-Emission Lifestyle Assistant</span>
-              </div>
-              <p className="text-[11px] text-slate-400">
-                Data sources: Free real-time atmospheric measurements from Open-Meteo & Google Gemini 2.5 Flash GenAI.
-              </p>
+      <footer className="mt-16 border-t border-stone-200 bg-white py-8 text-xs text-stone-500">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-stone-100">
+            <div className="flex items-center gap-2 text-stone-900 font-semibold">
+              <Wind className="h-4 w-4 text-[#164E3B]" />
+              <span>SmogShield</span>
+              <span className="text-stone-300">|</span>
+              <span className="text-xs font-normal text-stone-500">
+                Urban Air Quality & Low-Emission Lifestyle Assistant
+              </span>
             </div>
 
-            <div className="flex items-center gap-4 text-slate-400">
-              <span className="inline-flex items-center gap-1 text-slate-400">
-                <Globe className="h-3.5 w-3.5 text-teal-400" />
-                <span>Zero Commercial Key Required for AQI</span>
+            <div className="flex items-center gap-4 font-mono text-[11px] text-stone-500">
+              <span className="flex items-center gap-1">
+                <Globe className="h-3.5 w-3.5 text-stone-400" />
+                <span>Open-Meteo Atmospheric Models</span>
               </span>
-              <span className="inline-flex items-center gap-1 text-slate-400">
-                <Heart className="h-3.5 w-3.5 text-rose-400" />
-                <span>Built for Community Health</span>
-              </span>
+              <span>•</span>
+              <span>WHO 2021 Particulate Guidelines</span>
             </div>
           </div>
 
-          <div className="mt-6 rounded-xl border border-slate-800/80 bg-slate-900/40 p-3.5 text-[11px] text-slate-400 leading-relaxed">
-            <strong className="text-slate-300">Public Health & Medical Notice: </strong>
-            SmogShield provides evidence-informed environmental mitigation strategies, schedule guidance, and DIY indoor air quality hacks. It does not furnish medical diagnoses or replace physician care. Individuals experiencing severe acute respiratory distress, cyanosis, or uncontrollable asthma exacerbations must seek emergency clinical care immediately.
+          <div className="mt-4 text-[11px] text-stone-400 leading-relaxed">
+            <strong className="text-stone-600">Clinical & Environmental Notice: </strong>
+            SmogShield provides environmental exposure reduction schedules and building science guidance based on published aerosol physics. It does not provide medical diagnosis, clinical treatment, or replace certified healthcare advice. Individuals exhibiting acute hypoxia, severe asthma exacerbations, or chest pain must access emergency medical care immediately.
           </div>
         </div>
       </footer>

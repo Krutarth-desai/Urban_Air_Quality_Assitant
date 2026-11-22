@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { User, LogIn, LogOut, Bookmark } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { signout } from "@/app/login/actions";
 
@@ -18,36 +18,31 @@ export async function AuthNav() {
     if ((err as { digest?: string })?.digest === "DYNAMIC_SERVER_USAGE") {
       throw err;
     }
-    // Graceful fallback if Supabase credentials are not configured yet
     console.warn("[AuthNav] Could not fetch session:", err);
   }
 
   if (user) {
     return (
-      <div className="flex items-center gap-2.5 text-xs">
+      <div className="flex items-center gap-3 text-xs">
         <Link
           href="/saved"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-900/90 px-3 py-1.5 font-medium text-slate-200 transition hover:border-teal-500/50 hover:bg-slate-800 hover:text-teal-300"
+          className="font-medium text-stone-600 hover:text-stone-950 transition"
         >
-          <Bookmark className="h-3.5 w-3.5 text-teal-400" />
-          <span className="hidden sm:inline">Saved Plans</span>
+          Saved Plans
         </Link>
 
-        <div className="flex items-center gap-1.5 rounded-full border border-teal-500/30 bg-teal-500/10 px-3 py-1 font-medium text-teal-300">
-          <User className="h-3.5 w-3.5" />
-          <span className="max-w-[110px] truncate sm:max-w-[160px]">
-            {user.email}
-          </span>
-        </div>
+        <span className="hidden font-mono text-stone-500 sm:inline max-w-[140px] truncate">
+          {user.email}
+        </span>
 
         <form action={signout}>
           <button
             type="submit"
-            className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1.5 font-medium text-slate-300 transition hover:border-rose-500/50 hover:bg-rose-950/30 hover:text-rose-300"
+            className="inline-flex items-center gap-1 rounded-md border border-stone-200 bg-white px-2.5 py-1 font-medium text-stone-700 shadow-xs hover:bg-stone-50 hover:text-stone-950 transition"
             aria-label="Sign out"
           >
-            <LogOut className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Sign Out</span>
+            <LogOut className="h-3 w-3" />
+            <span>Sign Out</span>
           </button>
         </form>
       </div>
@@ -57,10 +52,9 @@ export async function AuthNav() {
   return (
     <Link
       href="/login"
-      className="inline-flex items-center gap-1.5 rounded-xl border border-teal-500/40 bg-teal-500/15 px-3.5 py-1.5 text-xs font-bold text-teal-200 shadow-sm transition hover:bg-teal-500/25 active:scale-95"
+      className="inline-flex items-center rounded-md border border-stone-300 bg-white px-3 py-1.5 text-xs font-medium text-stone-900 shadow-xs hover:border-stone-400 hover:bg-stone-50 transition"
     >
-      <LogIn className="h-3.5 w-3.5 text-teal-400" />
-      <span>Sign In / Save Profile</span>
+      Sign In
     </Link>
   );
 }
