@@ -242,9 +242,9 @@ export default function Home() {
         </section>
 
         {/* Row 2: 2-Column Asymmetric Workspace (4 cols settings, 8 cols plan) */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
-          {/* Left Column: Sticky Profile Parameters (4 cols) */}
-          <div className="lg:col-span-4 sticky top-18 space-y-4">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8 items-start">
+          {/* Left Column: Sticky Profile Parameters on large desktop (4 cols) */}
+          <div className="lg:col-span-4 lg:sticky lg:top-20 lg:self-start space-y-4">
             <section aria-label="Household Configuration">
               <ProfileForm
                 profile={profile}
