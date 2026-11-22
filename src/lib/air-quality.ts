@@ -41,7 +41,10 @@ export async function searchCities(query: string): Promise<CityLocation[]> {
     clean
   )}&count=5&language=en&format=json`;
 
-  const res = await fetch(url, { next: { revalidate: 3600 } });
+  const res = await fetch(url, {
+    next: { revalidate: 3600 },
+    signal: AbortSignal.timeout(8000),
+  });
   if (!res.ok) throw new Error("Failed to search cities");
 
   const data = (await res.json()) as { results?: Array<Record<string, unknown>> };
@@ -81,7 +84,10 @@ export async function fetchAirQuality(
     `&current=us_aqi,pm2_5,pm10,nitrogen_dioxide,ozone` +
     `&hourly=pm2_5,us_aqi&forecast_days=1&timezone=auto`;
 
-  const res = await fetch(url, { cache: "no-store" });
+  const res = await fetch(url, {
+    cache: "no-store",
+    signal: AbortSignal.timeout(8000),
+  });
   if (!res.ok) throw new Error("Failed to fetch live air quality data");
 
   const data = (await res.json()) as {

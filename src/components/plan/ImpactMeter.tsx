@@ -1,37 +1,43 @@
 "use client";
 
 import React from "react";
-import { TrendingUp } from "lucide-react";
-import { IMPACT_CONSTANTS } from "@/lib/aqi-utils";
+import { TrendingUp, Users } from "lucide-react";
+import { IMPACT_CONSTANTS, calculateCollectiveImpact } from "@/lib/aqi-utils";
 
 interface ImpactMeterProps {
   totalPm25Reduction: number;
   totalCo2Saved: number;
   activeCount: number;
   totalCount: number;
+  cityName?: string;
 }
 
 /**
  * Visual progress bars quantifying real-time personal inhaled PM2.5 reduction
- * and weekly community CO2 emissions prevented by active commitments.
+ * and weekly community CO2 emissions prevented by active commitments,
+ * alongside a scalable 50-household neighborhood collective impact readout.
  */
 export function ImpactMeter({
   totalPm25Reduction,
   totalCo2Saved,
   activeCount,
   totalCount,
+  cityName = "your community",
 }: ImpactMeterProps) {
   const gasolineKmOffset = Math.round(
     totalCo2Saved * IMPACT_CONSTANTS.KM_PER_KG_CO2_OFFSET
   );
 
+  const collective = calculateCollectiveImpact(totalCo2Saved, 50);
+
   return (
-    <div className="rounded-xl border border-stone-200 bg-stone-50/50 p-4">
+    <div className="rounded-xl border border-stone-200 bg-stone-50/50 p-4 space-y-4">
+      {/* Top Header */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-stone-200/60">
         <div className="flex items-center gap-2">
           <TrendingUp className="h-4 w-4 text-stone-700" />
           <h4 className="text-xs font-semibold uppercase tracking-wider text-stone-800 font-mono">
-            Live Direct Impact Telemetry
+            Direct Health & Emission Impact Telemetry
           </h4>
         </div>
         <span className="font-mono text-xs text-stone-500">
@@ -39,12 +45,13 @@ export function ImpactMeter({
         </span>
       </div>
 
-      <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {/* Primary Individual Household Impact Meters */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {/* PM2.5 Inhalation Exposure Reduction */}
         <div>
           <div className="flex items-center justify-between text-xs">
             <span className="font-medium text-stone-700">
-              Inhaled PM2.5 Reduction
+              Personal Inhaled PM2.5 Reduction
             </span>
             <span className="font-mono font-semibold tabular-nums text-emerald-800 text-sm">
               ~{totalPm25Reduction}%
@@ -57,7 +64,7 @@ export function ImpactMeter({
             />
           </div>
           <div className="mt-1 text-[11px] text-stone-500">
-            Calculated reduction in fine soot particulate entering lungs.
+            Calculated reduction in toxic fine soot particulate entering respiratory airways.
           </div>
         </div>
 
@@ -65,7 +72,7 @@ export function ImpactMeter({
         <div>
           <div className="flex items-center justify-between text-xs">
             <span className="font-medium text-stone-700">
-              Community CO2 Avoidance
+              Household CO2 Avoidance
             </span>
             <span className="font-mono font-semibold tabular-nums text-stone-900 text-sm">
               {totalCo2Saved.toFixed(1)} kg / wk
@@ -83,7 +90,53 @@ export function ImpactMeter({
             />
           </div>
           <div className="mt-1 text-[11px] text-stone-500">
-            Equivalent to ~{gasolineKmOffset} km of gasoline combustion eliminated.
+            Equivalent to ~{gasolineKmOffset} km of single-occupancy driving eliminated.
+          </div>
+        </div>
+      </div>
+
+      {/* Community Multiplier Banner: "If 50 families in [City] adopt this" */}
+      <div className="rounded-lg border border-stone-200 bg-white p-3 shadow-2xs">
+        <div className="flex items-center gap-1.5 text-stone-900 font-semibold text-xs">
+          <Users className="h-3.5 w-3.5 text-[#164E3B]" />
+          <span>Neighborhood Multiplier: If 50 families in {cityName} adopt this routine</span>
+        </div>
+
+        <div className="mt-2.5 grid grid-cols-1 gap-2.5 sm:grid-cols-3 text-xs">
+          <div className="rounded-md border border-stone-100 bg-stone-50 p-2">
+            <span className="text-[10px] font-mono uppercase text-stone-500">
+              Weekly CO2 Avoided
+            </span>
+            <div className="mt-0.5 font-mono text-sm font-semibold tabular-nums text-stone-900">
+              {collective.collectiveCo2Kg.toFixed(0)} kg / wk
+            </div>
+            <span className="text-[10px] text-stone-500">
+              ~{(collective.collectiveCo2Kg * 52 / 1000).toFixed(1)} tons / year
+            </span>
+          </div>
+
+          <div className="rounded-md border border-stone-100 bg-stone-50 p-2">
+            <span className="text-[10px] font-mono uppercase text-stone-500">
+              Vehicle Distance Offset
+            </span>
+            <div className="mt-0.5 font-mono text-sm font-semibold tabular-nums text-stone-900">
+              {collective.vehicleKmEliminated.toLocaleString()} km / wk
+            </div>
+            <span className="text-[10px] text-stone-500">
+              Combustion traffic eliminated
+            </span>
+          </div>
+
+          <div className="rounded-md border border-emerald-100 bg-emerald-50/50 p-2">
+            <span className="text-[10px] font-mono uppercase text-emerald-900">
+              Soot Particulate Prevented
+            </span>
+            <div className="mt-0.5 font-mono text-sm font-semibold tabular-nums text-emerald-900">
+              ~{collective.particulatePreventedGrams.toLocaleString()} g / wk
+            </div>
+            <span className="text-[10px] text-emerald-700">
+              Kept out of neighborhood lungs
+            </span>
           </div>
         </div>
       </div>

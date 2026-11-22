@@ -81,11 +81,12 @@ REQUIREMENTS:
 1. Provide exactly 3 "dailyRoutines" timed specifically around the safestWindow and peakSmogWindow.
 2. Provide exactly 3 "indoorHacks" tailored to their homeType, cookingFuel, and whether they own a HEPA purifier (if No, include affordable DIY or low-cost ventilation/cleaning hacks).
 3. Provide exactly 3 "sustainableAlternatives" tailored to their commuteMode and household habits.
-4. For EVERY item, clearly explain BOTH:
+4. Provide exactly 3 "communityActions" for neighborhood collective action (e.g. school-zone anti-idling, RWA clean air advisory, neighborhood carpooling).
+5. For EVERY item across all 4 categories, clearly explain BOTH:
    - "healthImpact": Direct, tangible health benefit (e.g., % reduction in inhaled PM2.5 or reduced airway irritation).
    - "emissionImpact": Direct community/environmental impact (e.g., grams of PM2.5 or kg of CO2 prevented).
-5. Keep numbers realistic (estimatedCo2SavedKgPerWeek between 0 and 25; estimatedPm25ExposureReductionPct between 2 and 45).
-6. Provide 1 actionable "communityTip" they can share with neighbors or their residential society.
+6. Keep numbers realistic (estimatedCo2SavedKgPerWeek between 0 and 25; estimatedPm25ExposureReductionPct between 2 and 45).
+7. Provide 1 actionable "communityTip" they can broadcast to neighbors or their residential society notice board.
 `;
 
   try {
@@ -103,6 +104,10 @@ REQUIREMENTS:
             dailyRoutines: { type: Type.ARRAY, items: actionItemSchema },
             indoorHacks: { type: Type.ARRAY, items: actionItemSchema },
             sustainableAlternatives: {
+              type: Type.ARRAY,
+              items: actionItemSchema,
+            },
+            communityActions: {
               type: Type.ARRAY,
               items: actionItemSchema,
             },
@@ -438,6 +443,49 @@ function buildFallbackPlan(
           "Induction transfers ~84% of energy directly to food vs ~40% for gas flames.",
         estimatedCo2SavedKgPerWeek: 2.5,
         estimatedPm25ExposureReductionPct: 12,
+        difficulty: "Medium",
+      },
+    ],
+    communityActions: [
+      {
+        id: "c1",
+        title: "School-Zone & Gate Zero-Idling Protocol",
+        timingOrFrequency: "Morning drop-off (07:30 - 08:30)",
+        description:
+          "Coordinate with your neighborhood school or security to enforce a 1-minute engine shutoff protocol during morning drop-off queues.",
+        healthImpact:
+          "Directly prevents toxic diesel soot accumulation at pediatric breathing level (below 1 meter).",
+        emissionImpact:
+          "Cuts ~15 kg CO2 and 120g of concentrated combustion particulate per week per carpool cluster.",
+        estimatedCo2SavedKgPerWeek: 5.0,
+        estimatedPm25ExposureReductionPct: 22,
+        difficulty: "Easy",
+      },
+      {
+        id: "c2",
+        title: "Residential Society (RWA) Inversion Advisory Broadcast",
+        timingOrFrequency: "Daily 07:00 broadcast",
+        description: `Broadcast today's Safest Window (${aqi.safestWindow}) on your apartment community board and request gardeners postpone leaf-blowing until after 14:00.`,
+        healthImpact:
+          "Protects elderly and vulnerable balcony residents from mechanically resuspended heavy-metal dust during inversion hours.",
+        emissionImpact:
+          "Prevents neighborhood biomass/leaf burning and saves collective fossil energy emissions.",
+        estimatedCo2SavedKgPerWeek: 3.5,
+        estimatedPm25ExposureReductionPct: 18,
+        difficulty: "Easy",
+      },
+      {
+        id: "c3",
+        title: "Neighborhood Commute & Transit Carpooling Hub",
+        timingOrFrequency: "3+ days per week",
+        description:
+          "Pair with 2 neighboring families for regular school runs or office metro hub drop-offs during severe winter smog episodes.",
+        healthImpact:
+          "Lowers total cumulative roadside NO2 and fine particle exposure for all participating children.",
+        emissionImpact:
+          "Removes 2 single-occupancy vehicles from congested road corridors, saving ~24 kg CO2 weekly.",
+        estimatedCo2SavedKgPerWeek: 12.0,
+        estimatedPm25ExposureReductionPct: 10,
         difficulty: "Medium",
       },
     ],

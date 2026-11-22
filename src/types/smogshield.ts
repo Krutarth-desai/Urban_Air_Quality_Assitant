@@ -142,6 +142,7 @@ export interface GeneratedActionPlan {
   indoorHacks: ActionItem[];
   sustainableAlternatives: ActionItem[];
   communityTip: string;
+  communityActions?: ActionItem[];
 }
 
 /**

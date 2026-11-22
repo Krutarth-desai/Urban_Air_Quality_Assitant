@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   classifyUsAqi,
   getBarColor,
+  calculateCollectiveImpact,
   AQI_THRESHOLDS,
   PM25_THRESHOLDS,
   IMPACT_CONSTANTS,
@@ -82,6 +83,14 @@ describe("AQI Utilities & Constants (aqi-utils.ts)", () => {
     it("exports realistic environmental impact constants", () => {
       expect(IMPACT_CONSTANTS.KM_PER_KG_CO2_OFFSET).toBe(4.2);
       expect(IMPACT_CONSTANTS.MAX_REALISTIC_EXPOSURE_REDUCTION_PCT).toBe(85);
+      expect(IMPACT_CONSTANTS.COMMUNITY_SCALE_HOUSEHOLDS).toBe(50);
+    });
+
+    it("calculates 50-household community collective scale metrics", () => {
+      const res = calculateCollectiveImpact(10.0, 50);
+      expect(res.collectiveCo2Kg).toBe(500);
+      expect(res.vehicleKmEliminated).toBe(2100);
+      expect(res.particulatePreventedGrams).toBe(40000);
     });
 
     it("provides styling for Easy, Medium, High difficulty levels", () => {

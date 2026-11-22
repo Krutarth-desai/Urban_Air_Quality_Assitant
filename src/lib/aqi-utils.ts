@@ -37,7 +37,37 @@ export const IMPACT_CONSTANTS = {
   MAX_REALISTIC_EXPOSURE_REDUCTION_PCT: 85,
   /** Weekly CO2 progress bar scale denominator in kg */
   WEEKLY_CO2_BAR_MAX_KG: 25,
+  /** Default neighborhood collective adoption cohort size */
+  COMMUNITY_SCALE_HOUSEHOLDS: 50,
 } as const;
+
+/**
+ * Calculates neighborhood collective emission reductions if scaled across multiple households.
+ *
+ * @param householdCo2SavedKg - Weekly CO2 saved by an individual household in kg
+ * @param households - Number of neighborhood families participating (default 50)
+ * @returns Object with scaled CO2 avoided in kg, equivalent vehicle km, and fine soot particulate prevented in grams
+ */
+export function calculateCollectiveImpact(
+  householdCo2SavedKg: number,
+  households = IMPACT_CONSTANTS.COMMUNITY_SCALE_HOUSEHOLDS
+): {
+  collectiveCo2Kg: number;
+  vehicleKmEliminated: number;
+  particulatePreventedGrams: number;
+} {
+  const collectiveCo2Kg = Math.round(householdCo2SavedKg * households * 10) / 10;
+  const vehicleKmEliminated = Math.round(
+    collectiveCo2Kg * IMPACT_CONSTANTS.KM_PER_KG_CO2_OFFSET
+  );
+  const particulatePreventedGrams = Math.round(collectiveCo2Kg * 80);
+
+  return {
+    collectiveCo2Kg,
+    vehicleKmEliminated,
+    particulatePreventedGrams,
+  };
+}
 
 /**
  * Visual styling tokens for AQI severity levels.

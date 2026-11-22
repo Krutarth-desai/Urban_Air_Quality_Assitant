@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Clock, CheckSquare, Square } from "lucide-react";
+import { Clock, CheckSquare, Square, Heart, Leaf } from "lucide-react";
 import { DIFFICULTY_STYLES } from "@/lib/aqi-utils";
 import type { ActionItem } from "@/types/smogshield";
 
@@ -12,7 +12,7 @@ interface RoutineChecklistProps {
 }
 
 /**
- * Interactive checklist of mitigation action items with health & emission explanations.
+ * Interactive checklist of mitigation action items with explicit Direct Impact explanations.
  */
 export function RoutineChecklist({
   items,
@@ -70,32 +70,34 @@ export function RoutineChecklist({
               </div>
             </div>
 
-            {/* Two-column Impact Explanation */}
+            {/* Direct Impact Explanation: Health Exposure & Community Emissions */}
             <div className="mt-3 ml-7 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
               <div className="rounded-lg border border-emerald-200/80 bg-emerald-50/50 p-2.5">
                 <div className="flex items-center justify-between text-[11px]">
-                  <span className="font-semibold text-emerald-900">
-                    Direct Health Impact
+                  <span className="flex items-center gap-1.5 font-semibold text-emerald-950">
+                    <Heart className="h-3 w-3 text-emerald-700" />
+                    <span>Direct Health Exposure Impact</span>
                   </span>
                   <span className="font-mono font-semibold tabular-nums text-emerald-800 text-[10px]">
                     -{item.estimatedPm25ExposureReductionPct}% PM2.5
                   </span>
                 </div>
-                <p className="mt-0.5 text-[11px] text-stone-600 leading-normal">
+                <p className="mt-1 text-[11px] text-stone-600 leading-normal">
                   {item.healthImpact}
                 </p>
               </div>
 
               <div className="rounded-lg border border-stone-200 bg-stone-50 p-2.5">
                 <div className="flex items-center justify-between text-[11px]">
-                  <span className="font-semibold text-stone-900">
-                    Community Emission Impact
+                  <span className="flex items-center gap-1.5 font-semibold text-stone-900">
+                    <Leaf className="h-3 w-3 text-stone-700" />
+                    <span>Direct Emissions Impact</span>
                   </span>
                   <span className="font-mono font-semibold tabular-nums text-stone-800 text-[10px]">
                     +{item.estimatedCo2SavedKgPerWeek} kg CO2/wk
                   </span>
                 </div>
-                <p className="mt-0.5 text-[11px] text-stone-600 leading-normal">
+                <p className="mt-1 text-[11px] text-stone-600 leading-normal">
                   {item.emissionImpact}
                 </p>
               </div>
