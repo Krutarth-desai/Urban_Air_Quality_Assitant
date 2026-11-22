@@ -22,8 +22,6 @@ import {
   Zap,
   Check,
   SlidersHorizontal,
-  ShieldCheck,
-  ShieldAlert,
 } from "lucide-react";
 import type { HouseholdProfile } from "@/lib/schemas";
 

@@ -47,36 +47,21 @@ export function SmogCoachChat({
   pm25,
   householdSummary,
 }: SmogCoachChatProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "initial",
-      role: "assistant",
-      content: `Hello. Ground-level telemetry for ${city} reports US AQI ${usAqi} (PM2.5: ${pm25} µg/m³). Ask any question regarding particulate exposure timing, mask filtration performance, room sealing, or low-emission commute shifts.`,
-      timestamp: "Live",
-    },
-  ]);
+  const [conversation, setConversation] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Sync initial greeting dynamically whenever selected city or live telemetry updates
-  useEffect(() => {
-    setMessages((prev) => {
-      // If user hasn't started chatting yet (only initial greeting is present), update it
-      if (prev.length <= 1) {
-        return [
-          {
-            id: "initial",
-            role: "assistant",
-            content: `Hello. Ground-level telemetry for ${city} reports US AQI ${usAqi} (PM2.5: ${pm25} µg/m³). Ask any question regarding particulate exposure timing, mask filtration performance, room sealing, or low-emission commute shifts.`,
-            timestamp: "Live",
-          },
-        ];
-      }
-      return prev;
-    });
-  }, [city, usAqi, pm25]);
+  // Derive initial greeting directly from telemetry props
+  const initialGreeting: Message = {
+    id: "initial",
+    role: "assistant",
+    content: `Hello. Ground-level telemetry for ${city} reports US AQI ${usAqi} (PM2.5: ${pm25} µg/m³). Ask any question regarding particulate exposure timing, mask filtration performance, room sealing, or low-emission commute shifts.`,
+    timestamp: "Live",
+  };
+
+  const allMessages = [initialGreeting, ...conversation];
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -84,7 +69,7 @@ export function SmogCoachChat({
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, loading]);
+  }, [conversation, loading]);
 
   const handleSend = async (messageToSend?: string) => {
     const text = (messageToSend ?? input).trim();
@@ -98,12 +83,11 @@ export function SmogCoachChat({
     setInput("");
 
     const userMsg = createChatMessage("user", text);
-    setMessages((prev) => [...prev, userMsg]);
+    setConversation((prev) => [...prev, userMsg]);
     setLoading(true);
 
     try {
-      const historyPayload = messages
-        .filter((m) => m.id !== "initial")
+      const historyPayload = conversation
         .slice(-6)
         .map((m) => ({ role: m.role, content: m.content }));
 
@@ -127,7 +111,7 @@ export function SmogCoachChat({
 
       const data = (await res.json()) as { reply: string; fallback?: boolean };
       const botMsg = createChatMessage("assistant", data.reply);
-      setMessages((prev) => [...prev, botMsg]);
+      setConversation((prev) => [...prev, botMsg]);
     } catch (err: unknown) {
       console.error("Chat error:", err);
       const msg =
@@ -155,7 +139,7 @@ export function SmogCoachChat({
 
       {/* Message List */}
       <div className="flex-1 max-h-[420px] overflow-y-auto p-4 space-y-3">
-        {messages.map((m) => {
+        {allMessages.map((m) => {
           const isUser = m.role === "user";
           return (
             <div

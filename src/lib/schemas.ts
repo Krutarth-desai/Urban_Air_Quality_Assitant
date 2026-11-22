@@ -117,6 +117,14 @@ export const SavePlanRequestSchema = z.object({
   completed_actions: z.array(z.string()).default([]),
 });
 
+export const AuthCredentialsSchema = z.object({
+  email: z.string().trim().email("Please provide a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+});
+
+export type AuthCredentials = z.infer<typeof AuthCredentialsSchema>;
+
+
 export type SavePlanRequest = z.infer<typeof SavePlanRequestSchema>;
 
 export interface SavedPlanRow {
