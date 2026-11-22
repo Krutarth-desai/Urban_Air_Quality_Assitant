@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { ChatRequestSchema } from "@/lib/schemas";
-import { generateSmogChatReply } from "@/lib/gemini";
+import { generateSmogChatReply, buildFallbackChatReply } from "@/lib/gemini";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
   const ip = getClientIp(request);
-  const rate = checkRateLimit(`chat:${ip}`, 15, 60_000);
+  const rate = checkRateLimit(`chat:${ip}`, 30, 60_000);
   if (!rate.allowed) {
     return NextResponse.json(
       { error: "Too many chat messages. Please pause briefly." },
@@ -13,23 +13,35 @@ export async function POST(request: Request) {
     );
   }
 
+  let body: unknown;
   try {
-    const body = await request.json();
-    const parsed = ChatRequestSchema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json(
-        { error: "Please enter a valid question (2-500 characters)." },
-        { status: 400 }
-      );
-    }
-
-    const reply = await generateSmogChatReply(parsed.data);
-    return NextResponse.json({ reply });
-  } catch (error) {
-    console.error("[/api/chat] Error:", error);
+    body = await request.json();
+  } catch {
     return NextResponse.json(
-      { error: "Smog Coach is temporarily unavailable." },
-      { status: 500 }
+      { error: "Invalid JSON in request body." },
+      { status: 400 }
     );
+  }
+
+  const parsed = ChatRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    console.warn("[SmogCoach Validation Warning]:", parsed.error.format());
+    return NextResponse.json(
+      { error: "Please enter a valid question (up to 500 characters)." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const result = await generateSmogChatReply(parsed.data);
+    return NextResponse.json(result);
+  } catch (err) {
+    console.error("[SmogCoach API Error]", err);
+    // Graceful fallback response instead of failing with a 500
+    const fallbackReply = buildFallbackChatReply(parsed.data);
+    return NextResponse.json({
+      reply: fallbackReply,
+      fallback: true,
+    });
   }
 }

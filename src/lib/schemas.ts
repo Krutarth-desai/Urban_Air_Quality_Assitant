@@ -54,12 +54,23 @@ export const PlanRequestSchema = z.object({
 });
 
 export const ChatRequestSchema = z.object({
-  message: z.string().trim().min(2).max(500),
-  city: z.string().trim().min(2).max(100),
+  message: z.string().trim().min(1).max(500),
+  city: z.string().trim().min(1).max(100),
   usAqi: z.number().min(0).max(1000),
   pm25: z.number().min(0).max(2000),
-  householdSummary: z.string().trim().max(300),
+  householdSummary: z.string().trim().max(500).optional().default(""),
+  history: z
+    .array(
+      z.object({
+        role: z.enum(["user", "assistant", "model"]),
+        content: z.string().max(1000),
+      })
+    )
+    .optional()
+    .default([]),
 });
+
+export type ChatRequest = z.infer<typeof ChatRequestSchema>;
 
 export interface ActionItem {
   id: string;

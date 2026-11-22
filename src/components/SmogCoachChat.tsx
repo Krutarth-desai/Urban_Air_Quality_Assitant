@@ -52,13 +52,31 @@ export function SmogCoachChat({
       id: "initial",
       role: "assistant",
       content: `Hello. Ground-level telemetry for ${city} reports US AQI ${usAqi} (PM2.5: ${pm25} µg/m³). Ask any question regarding particulate exposure timing, mask filtration performance, room sealing, or low-emission commute shifts.`,
-      timestamp: "00:00",
+      timestamp: "Live",
     },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Sync initial greeting dynamically whenever selected city or live telemetry updates
+  useEffect(() => {
+    setMessages((prev) => {
+      // If user hasn't started chatting yet (only initial greeting is present), update it
+      if (prev.length <= 1) {
+        return [
+          {
+            id: "initial",
+            role: "assistant",
+            content: `Hello. Ground-level telemetry for ${city} reports US AQI ${usAqi} (PM2.5: ${pm25} µg/m³). Ask any question regarding particulate exposure timing, mask filtration performance, room sealing, or low-emission commute shifts.`,
+            timestamp: "Live",
+          },
+        ];
+      }
+      return prev;
+    });
+  }, [city, usAqi, pm25]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -84,6 +102,11 @@ export function SmogCoachChat({
     setLoading(true);
 
     try {
+      const historyPayload = messages
+        .filter((m) => m.id !== "initial")
+        .slice(-6)
+        .map((m) => ({ role: m.role, content: m.content }));
+
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -93,6 +116,7 @@ export function SmogCoachChat({
           usAqi,
           pm25,
           householdSummary,
+          history: historyPayload,
         }),
       });
 
@@ -101,12 +125,13 @@ export function SmogCoachChat({
         throw new Error(errData.error || "Failed to reach consultation server");
       }
 
-      const data = (await res.json()) as { reply: string };
+      const data = (await res.json()) as { reply: string; fallback?: boolean };
       const botMsg = createChatMessage("assistant", data.reply);
       setMessages((prev) => [...prev, botMsg]);
     } catch (err: unknown) {
       console.error("Chat error:", err);
-      const msg = err instanceof Error ? err.message : "Unable to reach consultant";
+      const msg =
+        err instanceof Error ? err.message : "Unable to reach consultant";
       setError(msg);
     } finally {
       setLoading(false);
@@ -157,13 +182,15 @@ export function SmogCoachChat({
                 }`}
               >
                 <p className="whitespace-pre-wrap">{m.content}</p>
-                <div
-                  className={`mt-1 font-mono text-[10px] ${
-                    isUser ? "text-stone-400 text-right" : "text-stone-500"
-                  }`}
-                >
-                  {m.timestamp}
-                </div>
+                {m.timestamp && (
+                  <div
+                    className={`mt-1 font-mono text-[10px] ${
+                      isUser ? "text-stone-400 text-right" : "text-stone-500"
+                    }`}
+                  >
+                    {m.timestamp}
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -186,10 +213,10 @@ export function SmogCoachChat({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Starter Suggestions */}
-      <div className="border-t border-stone-200/80 bg-stone-50/50 px-3.5 py-2">
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5">
-          <span className="font-mono text-[10px] uppercase text-stone-500 shrink-0">
+      {/* Starter Suggestions with clean flex-wrap */}
+      <div className="border-t border-stone-200/80 bg-stone-50/50 px-3.5 py-2.5">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="font-mono text-[10px] uppercase text-stone-500 shrink-0 mr-1">
             Questions:
           </span>
           {STARTER_PROMPTS.map((prompt) => (
@@ -198,7 +225,7 @@ export function SmogCoachChat({
               type="button"
               onClick={() => handleSend(prompt)}
               disabled={loading}
-              className="shrink-0 rounded border border-stone-200 bg-white px-2 py-0.5 text-xs text-stone-700 transition hover:bg-stone-100 hover:text-stone-950 disabled:opacity-50"
+              className="rounded border border-stone-200 bg-white px-2.5 py-1 text-xs text-stone-700 transition hover:bg-stone-100 hover:text-stone-950 disabled:opacity-50 text-left font-medium shadow-2xs"
             >
               {prompt}
             </button>
